@@ -1,0 +1,53 @@
+import mongoose from 'mongoose';
+
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password_hash: {
+      type: String,
+      required: true,
+    },
+    first_name: {
+      type: String,
+      trim: true,
+    },
+    last_name: {
+      type: String,
+      trim: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'manager', 'user'],
+      default: 'user',
+    },
+    is_active: {
+      type: Boolean,
+      default: true,
+    },
+    is_verified: {
+      type: Boolean,
+      default: false,
+    },
+    verification_token: {
+      type: String,
+      trim: true,
+    },
+    verification_token_expiry: {
+      type: Date,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.models.User || mongoose.model('User', userSchema);
+
+
+
