@@ -1,17 +1,31 @@
 import { NextResponse } from 'next/server';
-import stripePackage from 'stripe';
 import {connectDB} from '@/lib/connectDB';
 import CartItem from '@/models/CartItem';
 import Product from '@/models/Product';
 import { requireAuth } from '@/lib/middleware/auth';
-
-const stripe = new stripePackage(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
   try {
     await connectDB();
 
     const user = await requireAuth(request);
+
+    // Check if Stripe is configured
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeSecretKey) {
+      console.error('Stripe not configured: STRIPE_SECRET_KEY missing');
+      return NextResponse.json({ success: false, message: 'Payment service not configured' }, { status: 500 });
+    }
+
+    // Import Stripe dynamically
+    const stripe = (await import('stripe')).default(stripeSecretKey);
+
+    // Check base URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!baseUrl) {
+      console.error('Base URL not configured: NEXT_PUBLIC_BASE_URL missing');
+      return NextResponse.json({ success: false, message: 'Application URL not configured' }, { status: 500 });
+    }
     const body = await request.json();
     const { billingAddress, shippingAddress } = body;
 
@@ -45,8 +59,8 @@ export async function POST(request) {
       shipping_address_collection: {
         allowed_countries: ['AE'],
       },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/cancel`,
+      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/checkout/cancel`,
     });
 
     return NextResponse.json({ success: true, url: session.url });
