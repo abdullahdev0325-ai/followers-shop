@@ -21,7 +21,7 @@ const adminMenuItems = [
   },
   {
     title: 'Products',
-    href: '/admin/product/add-product',
+    href: '/admin/product',
     icon: FiPackage,
   },
   {

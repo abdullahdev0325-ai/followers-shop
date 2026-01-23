@@ -19,8 +19,8 @@ export default function WishlistSidebar({ open, setOpen }) {
         <div className="p-4">No items in wishlist</div>
       ) : (
         <div className="p-4 flex flex-col gap-4 h-full">
-          {wishlistItems.map((item) => (
-            <div key={item.id} className="flex gap-3 items-center border-b pb-2">
+          {wishlistItems.map((item,i) => (
+            <div key={item.id || i} className="flex gap-3 items-center border-b pb-2">
               <Image src={item.image} width={60} height={60} alt={item.name} className="object-contain" />
               <div className="flex-1">
                 <p className="font-medium">{item.name}</p>

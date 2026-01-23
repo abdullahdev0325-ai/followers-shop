@@ -8,6 +8,7 @@ import {
   FiHeart,
   FiArrowLeft,
 } from 'react-icons/fi';
+import { normalizeImagePath } from '@/lib/utils/normalizeImagePath';
 import { addToCart } from '@/lib/slices/cartSlice';
 import {
   addToWishlist,
@@ -102,7 +103,7 @@ export default function ProductDetails() {
               shadow-inner shadow-pink-300/40 dark:shadow-pink-500/30"
             >
               <img
-                src={product.image_url}
+                src={normalizeImagePath(product.image_url)}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />

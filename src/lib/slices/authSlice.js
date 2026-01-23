@@ -27,21 +27,37 @@ export const signup = createAsyncThunk('auth/signup', async (userData, { rejectW
 // Async thunk to login
 export const login = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
   try {
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('🔐 [CLIENT] Login Request Initiated');
+    console.log(`📧 Email: ${credentials.email}`);
+    
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
+    
     const data = await response.json();
+    console.log('✅ [CLIENT] Login Response Received:', data);
+    
     if (!response.ok) {
+      console.log(`❌ [CLIENT] Login Failed: ${data.message}`);
+      console.log('═══════════════════════════════════════════════════════════\n');
       return rejectWithValue(data.message || 'Login failed');
     }
+    
     // Store token in localStorage
-    if (data.data.token) {
-      localStorage.setItem('token', data.data.token);
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      console.log(`✅ [CLIENT] Token Stored in localStorage`);
+      console.log(`👤 User Role: ${data.user?.role?.toUpperCase()}`);
+      console.log(`📍 User ID: ${data.user?.id}`);
+      console.log('═══════════════════════════════════════════════════════════\n');
     }
-    return data.data;
+    return data;
   } catch (error) {
+    console.error('🔴 [CLIENT] Login Error:', error);
+    console.log('═══════════════════════════════════════════════════════════\n');
     return rejectWithValue(error.message || 'Login failed');
   }
 });
@@ -86,6 +102,35 @@ export const setToken = createAsyncThunk('auth/setToken', async (token, { dispat
     localStorage.removeItem('token');
   }
   return token;
+});
+
+// Async thunk to logout
+export const logoutAsync = createAsyncThunk('auth/logoutAsync', async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    
+    const data = await response.json();
+    console.log('Logout response:', data);
+    
+    if (!response.ok) {
+      return rejectWithValue(data.message || 'Logout failed');
+    }
+    
+    // Remove from localStorage on success
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Logout error:', error);
+    // Still remove from localStorage even if API fails
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return rejectWithValue(error.message || 'Logout failed');
+  }
 });
 
 const initialState = {
@@ -135,16 +180,26 @@ const authSlice = createSlice({
     // Login
     builder
       .addCase(login.pending, (state) => {
+        console.log('⏳ [REDUX] Login Pending...');
         state.loading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        console.log('\n═══════════════════════════════════════════════════════════');
+        console.log('✅ [REDUX] Login Successful!');
+        console.log(`👤 User: ${action.payload.user.email}`);
+        console.log(`🎯 Role: ${action.payload.user.role.toUpperCase()}`);
+        console.log('═══════════════════════════════════════════════════════════\n');
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
       })
       .addCase(login.rejected, (state, action) => {
+        console.log('\n═══════════════════════════════════════════════════════════');
+        console.log('❌ [REDUX] Login Failed!');
+        console.log(`Error: ${action.payload}`);
+        console.log('═══════════════════════════════════════════════════════════\n');
         state.loading = false;
         state.error = action.payload;
       });
@@ -175,6 +230,27 @@ const authSlice = createSlice({
       .addCase(setToken.fulfilled, (state, action) => {
         state.token = action.payload;
         state.isAuthenticated = !!action.payload;
+      });
+
+    // Logout Async
+    builder
+      .addCase(logoutAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutAsync.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(logoutAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // Still clear state on failure
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
       });
   },
 });

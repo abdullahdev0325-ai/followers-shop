@@ -70,8 +70,8 @@ export default function OrderTable() {
                 <td colSpan={7} className="text-center py-10">No orders found</td>
               </tr>
             ) : (
-              orders.map((order) => (
-                <tr key={order._id}>
+              orders.map((order,i) => (
+                <tr key={order._id || i}>
                   <td className="px-6 py-4 text-sm">{order._id}</td>
                   <td className="px-6 py-4 text-sm">{order.user_id}</td>
                   <td className="px-6 py-4 text-sm">

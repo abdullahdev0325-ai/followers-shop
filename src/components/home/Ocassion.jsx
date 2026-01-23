@@ -2,24 +2,38 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import Heading, { HeadingText, LoginHeading } from '../ui/Heading';
+import { normalizeImagePath } from '@/lib/utils/normalizeImagePath';
+import { LoginHeading } from '../ui/Heading';
 
-
-
-export default function OccasionSlider({occasions}) {
-  // console.log("ocassion",occasions);
-  
+export default function OccasionSlider({ occasions }) {
   const sliderRef = useRef(null);
-  const trackRef = useRef(null);
 
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(8);
+
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const [prevTranslate, setPrevTranslate] = useState(0);
 
-  const visible = 8;
+  /* ================= RESPONSIVE ITEMS ================= */
+  useEffect(() => {
+    const updateVisible = () => {
+      const width = window.innerWidth;
+
+      if (width < 640) setVisible(3);        // mobile
+      else if (width < 768) setVisible(4);   // sm
+      else if (width < 1024) setVisible(5);  // md
+      else if (width < 1280) setVisible(6);  // lg
+      else setVisible(8);                    // xl
+    };
+
+    updateVisible();
+    window.addEventListener('resize', updateVisible);
+
+    return () => window.removeEventListener('resize', updateVisible);
+  }, []);
+
   const maxIndex = occasions.length - visible;
 
   /* ================= AUTO SLIDE ================= */
@@ -35,11 +49,14 @@ export default function OccasionSlider({occasions}) {
 
   /* ================= TRANSLATE ================= */
   useEffect(() => {
+    if (!sliderRef.current) return;
+
     const width = sliderRef.current.offsetWidth;
     const move = (width / visible) * index;
+
     setCurrentTranslate(-move);
     setPrevTranslate(-move);
-  }, [index]);
+  }, [index, visible]);
 
   /* ================= DRAG ================= */
   const dragStart = (e) => {
@@ -49,32 +66,43 @@ export default function OccasionSlider({occasions}) {
 
   const dragMove = (e) => {
     if (!isDragging) return;
-    const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+
+    const currentX = e.touches
+      ? e.touches[0].clientX
+      : e.clientX;
+
     const diff = currentX - startX;
     setCurrentTranslate(prevTranslate + diff);
   };
 
   const dragEnd = () => {
+    if (!isDragging) return;
+
     setIsDragging(false);
     const movedBy = currentTranslate - prevTranslate;
 
-    if (movedBy < -100 && index < maxIndex) setIndex(index + 1);
-    if (movedBy > 100 && index > 0) setIndex(index - 1);
+    if (movedBy < -100 && index < maxIndex) {
+      setIndex(index + 1);
+    }
+
+    if (movedBy > 100 && index > 0) {
+      setIndex(index - 1);
+    }
   };
 
   return (
-    <section className="py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="py-8 sm:py-12 bg-white dark:bg-zinc-900">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+
         <LoginHeading text="Shop by Occasion" />
 
         <div
           ref={sliderRef}
-          className="relative mt-10 overflow-hidden "
+          className="relative mt-6 sm:mt-8 overflow-hidden"
           onMouseLeave={dragEnd}
         >
           {/* TRACK */}
           <div
-            ref={trackRef}
             className={`flex transition-transform ${
               isDragging ? 'duration-0' : 'duration-500'
             }`}
@@ -86,38 +114,63 @@ export default function OccasionSlider({occasions}) {
             onTouchMove={dragMove}
             onTouchEnd={dragEnd}
           >
-            {occasions &&
-            occasions.map((item, i) => (
+            {occasions?.map((item, i) => (
               <div
                 key={i}
                 className="
                   flex-shrink-0
-                  w-1/2
-                  sm:w-1/3
-                  md:w-1/4
+                  w-1/3
+                  sm:w-1/4
+                  md:w-1/5
                   lg:w-1/6
                   xl:w-[12.5%]
-                  px-3
+                  px-1 sm:px-1.5 md:px-2
                   text-center
-                  cursor-grab relative
+                  cursor-grab
                 "
               >
+                {/* IMAGE */}
                 <div
-        className={`shadow-md relative group hover:shadow-xl hover:-translate-y-2 p-3 w-[100px] sm:w-[132px] h-[100px]   sm:h-[132px] transition-all ease-in-out duration-150 flex items-center justify-center border-2 relative rounded-full bg-pink-300`}
-      >
-        <Image
-          src={item.image || "/images/decore.jpg"}
-          alt={item.name}
- fill
-          className="object-cover rounded-full group-hover:scale-110 transition-all ease-in-out duration-150"
-        />
-      </div>
-                <p className="mt-3 text-sm font-semibold">{item.name}</p>
+                  className="
+                    shadow-md
+                    relative
+                    group
+                    hover:shadow-xl
+                    hover:-translate-y-2
+                    p-1.5 sm:p-2 md:p-3
+                    w-14 h-14
+                    sm:w-20 sm:h-20
+                    md:w-28 md:h-28
+                    lg:w-32 lg:h-32
+                    mx-auto
+                    transition-all
+                    duration-200
+                    flex
+                    items-center
+                    justify-center
+                    border-2
+                    rounded-full
+                    bg-pink-300
+                    dark:bg-pink-600
+                  "
+                >
+                  <Image
+                    src={normalizeImagePath(
+                      item.image || '/images/decore.jpg'
+                    )}
+                    alt={item.name}
+                    fill
+                    className="object-cover rounded-full group-hover:scale-110 transition-all duration-200"
+                  />
+                </div>
+
+                {/* TEXT */}
+                <p className="mt-2 text-xs sm:text-sm md:text-base font-semibold line-clamp-1">
+                  {item.name}
+                </p>
               </div>
             ))}
           </div>
-
-          
         </div>
       </div>
     </section>

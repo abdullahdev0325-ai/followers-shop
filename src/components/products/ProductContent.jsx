@@ -19,6 +19,8 @@ function ProductPageContent() {
         setLoading(true);
         setError(null);
         const res = await callPublicApi("/products?limit=1000", "GET");
+        console.log("res",res);
+        
         if (res.success && res.data) {
           setProducts(res.data);
           setFilteredProducts(res.data);

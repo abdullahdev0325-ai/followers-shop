@@ -91,13 +91,13 @@ export default function MyOrders() {
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Orders</h1>
 
       <div className="space-y-4">
-        {orders.map((order) => {
+        {orders.map((order,i) => {
           const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
           const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
           return (
             <div
-              key={order.id}
+              key={order._id || i}
               className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-800 p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

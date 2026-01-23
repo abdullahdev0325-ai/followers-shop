@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
+import { normalizeImagePath } from "@/lib/utils/normalizeImagePath";
 
 export default function ProductListItem({ product }) {
   const { _id, title, name, price, image, rating, occasion, category, discount } = product;
@@ -14,7 +15,7 @@ export default function ProductListItem({ product }) {
         {/* Image Section - Left */}
         <div className="w-40 h-40 shrink-0 relative overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 group">
           <img
-            src={image || "/placeholder.jpg"}
+            src={normalizeImagePath(image, "/placeholder.jpg")}
             alt={productTitle}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />

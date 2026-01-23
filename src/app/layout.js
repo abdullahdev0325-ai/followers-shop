@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Aroma Flowers - Fresh Flowers & Gifts Delivery in Dubai & UAE",
+  title: "Followora - Fresh Flowers & Gifts Delivery in Dubai & UAE",
   description: "Best online flower shop in Dubai & UAE. Same-day delivery, midnight delivery available. Fresh flowers, cakes, gifts, and party decorations.",
   keywords: ["flowers", "flower delivery", "Dubai", "UAE", "same day delivery", "midnight delivery", "gifts", "cakes"],
   openGraph: {
-    title: "Aroma Flowers - Fresh Flowers & Gifts Delivery",
+    title: "Followora - Fresh Flowers & Gifts Delivery",
     description: "Best online flower shop in Dubai & UAE",
     type: "website",
   },

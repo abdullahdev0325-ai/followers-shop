@@ -7,6 +7,9 @@ import Image from "next/image";
 import { callPrivateApi, callPublicApi } from "@/services/callApis";
 import { useAuth } from "@/hooks/authContext";
 import DashboardLoading from "@/app/admin/loading";
+import ButtonGradient from "../ui/Gradient";
+import { HeroHeading, LoginHeading } from "../ui/Heading";
+import GradientWrapper from "../ui/Gradient";
 export default function AdminBlogPage() {
   const {token}=useAuth()
   const [blogs, setBlogs] = useState([]);
@@ -87,19 +90,20 @@ export default function AdminBlogPage() {
 
       {/* HEADER */}
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-2xl font-bold text-pink-600">
-          Blog Management
-        </h1>
+        
+        <HeroHeading text1="Blog Management" />
 
-        <button
+        <GradientWrapper>
+          <button
           onClick={() => {
             setEditBlog(null);
             setShowForm(true);
           }}
-          className="bg-pink-500 text-white px-5 py-2 rounded-lg font-medium hover:bg-pink-600 transition"
+          className="bg-transparent text-white px-5 py-2 rounded-lg font-medium  transition"
         >
           + Add New Blog
         </button>
+        </GradientWrapper>
       </div>
 
       {/* MODAL */}
@@ -122,18 +126,18 @@ export default function AdminBlogPage() {
       )}
 
       {/* TABLE */}
-      <div className="overflow-x-auto border rounded-xl shadow-sm">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-pink-100 text-pink-700">
+      <div className="overflow-x-auto border border-gray-300 rounded-xl shadow-sm">
+        <table className="w-full table-auto border border-gray-300-collapse">
+          <thead className="text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-pink-600 hover:to-red-600 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-pink-500/40">
             <tr>
-              <th className="border px-3 py-2">Image</th>
-              <th className="border px-3 py-2">Title</th>
-              <th className="border px-3 py-2">Slug</th>
-              <th className="border px-3 py-2">Status</th>
-              <th className="border px-3 py-2">Author</th>
-              <th className="border px-3 py-2">Created</th>
-              <th className="border px-3 py-2">Updated</th>
-              <th className="border px-3 py-2">Actions</th>
+              <th className="border border-gray-300 px-3 py-3">Image</th>
+              <th className="border border-gray-300 px-3 py-3">Title</th>
+              <th className="border border-gray-300 px-3 py-3">Slug</th>
+              <th className="border border-gray-300 px-3 py-3">Status</th>
+              <th className="border border-gray-300 px-3 py-3">Author</th>
+              <th className="border border-gray-300 px-3 py-3">Created</th>
+              <th className="border border-gray-300 px-3 py-3">Updated</th>
+              <th className="border border-gray-300 px-3 py-3">Actions</th>
             </tr>
           </thead>
 
@@ -149,7 +153,7 @@ export default function AdminBlogPage() {
             ) : (
               blogs.map((b) => (
                 <tr key={b._id} className="hover:bg-pink-50">
-                  <td className="border px-3 py-2">
+                  <td className="border border-gray-300 px-3 py-2">
                     {b.image ? (
                       <Image
                         src={b?.image}
@@ -163,9 +167,9 @@ export default function AdminBlogPage() {
                     )}
                   </td>
 
-                  <td className="border px-3 py-2">{b.title}</td>
-                  <td className="border px-3 py-2">{b.slug}</td>
-                  <td className="border px-3 py-2">
+                  <td className="border border-gray-300 px-3 py-2">{b.title}</td>
+                  <td className="border border-gray-300 px-3 py-2">{b.slug}</td>
+                  <td className="border border-gray-300 px-3 py-2">
                     <span
                       className={`px-2 py-1 rounded text-xs font-medium ${
                         b.status === "published"
@@ -176,16 +180,16 @@ export default function AdminBlogPage() {
                       {b.status}
                     </span>
                   </td>
-                  <td className="border px-3 py-2">
+                  <td className="border border-gray-300 px-3 py-2">
                     {b.author || "-"}
                   </td>
-                  <td className="border px-3 py-2">
+                  <td className="border border-gray-300 px-3 py-2">
                     {new Date(b.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="border px-3 py-2">
+                  <td className="border border-gray-300 px-3 py-2">
                     {new Date(b.updatedAt).toLocaleDateString()}
                   </td>
-                  <td className="border px-3 py-2 flex gap-2">
+                  <td className="border border-gray-300 px-3 py-2 flex gap-2">
                     <button
                       onClick={() => handleEdit(b)}
                       className="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600"

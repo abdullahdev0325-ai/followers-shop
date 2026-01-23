@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { callPrivateApi } from "@/services/callApis";
 import { useAuth } from "@/hooks/authContext";
+import GradientWrapper from "../ui/Gradient";
 
 export default function BlogForm({ blog, onSuccess }) {
   const { token } = useAuth();
@@ -113,11 +114,13 @@ export default function BlogForm({ blog, onSuccess }) {
         className="space-y-5 max-h-[80vh] overflow-y-auto rounded-xl border bg-white shadow-lg"
       >
         {/* HEADER */}
-        <div className="bg-pink-500 text-white px-6 py-4 rounded-t-xl">
+        <GradientWrapper>
+          <div className="bg-transparent text-white px-6 py-4 rounded-t-xl">
           <h2 className="text-xl font-semibold">
             {blog ? "Update Blog" : "Create Blog"}
           </h2>
         </div>
+        </GradientWrapper>
 
         <div className="p-6 space-y-4">
           {/* TITLE */}

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
 import { callPrivateApi } from '@/services/callApis';
 import { useAuth } from '@/hooks/authContext';
+import { normalizeImagePath } from '@/lib/utils/normalizeImagePath';
 
 export default function ProductCard({ product }) {
   const { token } = useAuth(); // get token from auth context
@@ -147,7 +148,7 @@ export default function ProductCard({ product }) {
       {/* 🖼 IMAGE */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-zinc-800">
         <img
-          src={product.image}
+          src={normalizeImagePath(product.image)}
           alt={product.name}
           onError={(e) => (e.currentTarget.src = '/images/fallback.jpg')}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

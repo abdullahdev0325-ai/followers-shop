@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const MONGO_URI = process.env.DATABASE_URL;
+console.log("MongoDB URI:", MONGO_URI);
 
 // connection options (safe defaults)
 const options = {

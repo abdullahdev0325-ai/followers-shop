@@ -7,6 +7,8 @@ import { callPrivateApi } from "@/services/callApis";
 import Image from "next/image";
 import { useAuth } from "@/hooks/authContext";
 import DashboardLoading from "@/app/admin/loading";
+import { HeroHeading } from "../ui/Heading";
+import GradientWrapper from "../ui/Gradient";
 
 export default function AdminOccasionPage() {
   const [occasions, setOccasions] = useState([]);
@@ -71,15 +73,19 @@ const {token}=useAuth()
       <Toaster position="top-right" />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Occasions</h1>
+        <HeroHeading text1="Occasions" />
+        <GradientWrapper>
+
         <button
           onClick={() => {
             setEditOccasion(null);
             setShowForm(true);
           }}
-          className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
+          className="bg-transparent text-white px-4 py-2 rounded hover:bg-pink-700"
         >
           Add New Occasion
         </button>
+        </GradientWrapper>
       </div>
 
       {showForm && (
@@ -96,17 +102,17 @@ const {token}=useAuth()
         </div>
       )}
 
-      <div className="overflow-x-auto border rounded shadow">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-pink-600 text-white">
+      <div className="overflow-x-auto border border-gray-300 rounded shadow">
+        <table className="w-full table-auto border border-gray-300-collapse">
+          <thead className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-pink-600 hover:to-red-600 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-pink-500/40 text-white">
             <tr>
-              <th className="border px-2 py-1">Image</th>
-              <th className="border px-2 py-1">Name</th>
-              <th className="border px-2 py-1">Slug</th>
-              <th className="border px-2 py-1">Active</th>
-              <th className="border px-2 py-1">Created At</th>
-              <th className="border px-2 py-1">Updated At</th>
-              <th className="border px-2 py-1">Actions</th>
+              <th className="border border-gray-300 px-2 py-3">Image</th>
+              <th className="border border-gray-300 px-2 py-3">Name</th>
+              <th className="border border-gray-300 px-2 py-3">Slug</th>
+              <th className="border border-gray-300 px-2 py-3">Active</th>
+              <th className="border border-gray-300 px-2 py-3">Created At</th>
+              <th className="border border-gray-300 px-2 py-3">Updated At</th>
+              <th className="border border-gray-300 px-2 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -119,9 +125,9 @@ const {token}=useAuth()
                 </td>
               </tr>
             ) : (
-              occasions.map((o) => (
-                <tr key={o.id} className="hover:bg-gray-50">
-                  <td className="border px-2 py-1">
+              occasions.map((o,i) => (
+                <tr key={o._id || i} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-2 py-1">
                     {o.image ? (
                       <Image
                         src={o.image}
@@ -134,18 +140,18 @@ const {token}=useAuth()
                       "—"
                     )}
                   </td>
-                  <td className="border px-2 py-1">{o.name || "—"}</td>
-                  <td className="border px-2 py-1">{o.slug || "—"}</td>
-                  <td className="border px-2 py-1">
+                  <td className="border border-gray-300 px-2 py-1">{o.name || "—"}</td>
+                  <td className="border border-gray-300 px-2 py-1">{o.slug || "—"}</td>
+                  <td className="border border-gray-300 px-2 py-1">
                     {o.is_active !== undefined ? (o.is_active ? "Yes" : "No") : "—"}
                   </td>
-                  <td className="border px-2 py-1">
+                  <td className="border border-gray-300 px-2 py-1">
                     {o.created_at ? new Date(o.created_at).toLocaleDateString() : "—"}
                   </td>
-                  <td className="border px-2 py-1">
+                  <td className="border border-gray-300 px-2 py-1">
                     {o.updated_at ? new Date(o.updated_at).toLocaleDateString() : "—"}
                   </td>
-                  <td className="border px-2 py-1 flex gap-2">
+                  <td className="border border-gray-300 px-2 py-1 flex gap-2">
                     <button
                       onClick={() => handleEdit(o)}
                       className="bg-pink-600 text-white px-2 py-1 rounded hover:bg-pink-700"

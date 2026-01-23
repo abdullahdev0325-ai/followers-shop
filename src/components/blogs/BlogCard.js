@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { LoginHeading } from '../ui/Heading';
 
 export default function BlogCard({ blog, isEven }) {
   console.log("blog",blog);
@@ -43,16 +44,10 @@ export default function BlogCard({ blog, isEven }) {
       <div className="w-full lg:w-1/2 p-8">
        
 
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          <span
-            className="hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
-          >
-            {blog.title}
-          </span>
-        </h2>
+        <LoginHeading text={blog.title} />
 
-        {blog.description && (
-          <p className="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">{blog.description}</p>
+        {blog.content && (
+          <p className="text-gray-600 dark:text-gray-300 mb-6 line-clamp-3">{blog.content}</p>
         )}
 
         <Link

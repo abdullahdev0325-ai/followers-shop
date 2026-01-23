@@ -24,8 +24,8 @@ export default function CartSidebar({ open, setOpen }) {
         <div className="p-4">Your cart is empty</div>
       ) : (
         <div className="p-4 flex flex-col gap-4  h-full">
-          {cartItems.map((item) => (
-            <div key={item.cartItemId} className="flex gap-3 items-center border-b pb-2">
+          {cartItems.map((item,i) => (
+            <div key={item.cartItemId || i} className="flex gap-3 items-center border-b pb-2">
               <Image src={item.image} width={60} height={60} alt={item.name} className="object-contain" />
               <div className="flex-1">
                 <p className="font-medium">{item.name}</p>

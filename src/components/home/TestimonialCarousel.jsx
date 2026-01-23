@@ -38,7 +38,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="relative py-20 ">
+    <section className="relative py-8 sm:py-12 md:py-16 lg:py-20 ">
       {/* BACKGROUND */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -46,14 +46,14 @@ export default function Testimonials() {
       />
       <div className="absolute inset-0 bg-black/70"></div>
 
-      <div className="relative max-w-7xl text-center mx-auto px-4">
+      <div className="relative max-w-7xl text-center mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <LoginHeading text="What Our Customers Say" />
 
         {/* CARDS GRID */}
-        <div className="grid grid-cols-4 mt-10 justify-center gap-6">
-  {testimonials.map((t) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6 sm:mt-8 md:mt-10 justify-center gap-3 sm:gap-4 md:gap-6">
+  {testimonials.map((t,i) => (
     <div
-      key={t.id}
+      key={t._id || i}
       className=''
     >
       <TestimonialCard t={t} />

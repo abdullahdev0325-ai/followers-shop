@@ -4,13 +4,7 @@ import axios from 'axios';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Helper to get auth token
-const getAuthHeaders = () => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-  return {};
-};
+
 
 // Async Thunks
 export const createOrder = createAsyncThunk(

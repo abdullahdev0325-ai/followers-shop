@@ -4,20 +4,21 @@ import crypto from 'crypto';
 import { connectDB } from '@/lib/connectDB';
 import User from '@/models/User';
 import { generateToken } from '@/lib/middleware/auth';
-import { sendVerificationEmail, sendWelcomeEmail } from '@/lib/email';
-
+import { sendEmail } from '@/lib/email';
+import { otpEmailTemplate } from '@/lib/emailTemplate';
 export async function POST(request) {
   try {
     await connectDB();
 
     const body = await request.json();
-    const { email, password, firstName, lastName, role = 'user' } = body;
-  console.log("body in register",email,firstName,lastName,role);
-  
-    // Validation
-    if (!email || !password) {
+    const { email, password, name, role = 'user' } = body;
+
+    console.log('Signup body:', email, name, role, password);
+
+    // 🔎 Validation
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { success: false, message: 'Email and password are required' },
+        { success: false, message: 'Name, email and password are required' },
         { status: 400 }
       );
     }
@@ -29,7 +30,7 @@ export async function POST(request) {
       );
     }
 
-    // Check if user already exists
+    // 🔁 Check existing user
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
@@ -38,57 +39,55 @@ export async function POST(request) {
       );
     }
 
-    // Hash password
+    // 🔐 Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Generate verification token
-    // const verificationToken = crypto.randomBytes(32).toString('hex');
-    // const verificationTokenExpiry = new Date();
-    // verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + 24); // 24 hours
+    // 🔢 Generate OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
+    const otpExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
-    // Create user
+    // 👤 Create user
     const user = await User.create({
+      name,
       email: email.toLowerCase(),
       password_hash: passwordHash,
-      first_name: firstName || null,
-      last_name: lastName || null,
-      role: role,
-      // verification_token: verificationToken,
-      // verification_token_expiry: verificationTokenExpiry,
+      role,
       is_verified: false,
+      otp_hash: otpHash,
+      otp_expiry: otpExpiry,
     });
 
-    // Send verification email (non-blocking)
-    // sendVerificationEmail({
-    //   email: user.email,
-    //   firstName: user.first_name,
-    //   verificationToken,
-    // }).catch((error) => {
-    //   console.error('Failed to send verification email:', error);
-    // });
+    // 📧 Send OTP Email (non-blocking)
+    sendEmail({
+      to: user.email,
+      subject: 'Verify your email (OTP)',
+      html: otpEmailTemplate({
+        name: user.name,
+        otp,
+      }),
+    }).catch((err) => {
+      console.error('OTP email failed:', err);
+    });
 
-    // // Send welcome email (non-blocking)
-    // sendWelcomeEmail({
-    //   email: user.email,
-    //   firstName: user.first_name,
-    // }).catch((error) => {
-    //   console.error('Failed to send welcome email:', error);
-    // });
-
-    // Generate token
-    const token = generateToken(user._id.toString(), user.email, user.role);
+    // 🔑 Generate JWT
+    const token = generateToken(
+      user._id.toString(),
+      user.email,
+      user.role
+    );
 
     return NextResponse.json(
       {
         success: true,
-        message: 'User created successfully',
+        message: 'Signup successful. OTP sent to your email.',
         data: {
           user: {
             id: user._id.toString(),
+            name: user.name,
             email: user.email,
-            firstName: user.first_name,
-            lastName: user.last_name,
             role: user.role,
+            isVerified: user.is_verified,
           },
           token,
         },
@@ -97,26 +96,15 @@ export async function POST(request) {
     );
   } catch (error) {
     console.error('Signup error:', error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: 'User with this email already exists' },
-        { status: 409 }
-      );
-    }
-    if (!process.env.MONGODB_URL && !process.env.DATABASE_URL) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Database connection failed. Please check your MONGODB_URI and ensure the database is running.',
-        },
-        { status: 500 }
-      );
-    }
+
     return NextResponse.json(
       {
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        error:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : undefined,
       },
       { status: 500 }
     );

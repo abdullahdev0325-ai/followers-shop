@@ -110,7 +110,7 @@ const handleWishlistClick = (e) => {
           onError={(e) => (e.currentTarget.src = '/images/follower.jpg')}
           className="
             w-full
-            h-48 sm:h-56 md:h-60
+            h-40 sm:h-48 md:h-56 lg:h-60
             object-cover
             transition-transform duration-500
             group-hover:scale-110
@@ -122,25 +122,25 @@ const handleWishlistClick = (e) => {
           className="
             absolute inset-0
             bg-black/40
-            flex items-center justify-center gap-4
+            flex items-center justify-center gap-3 sm:gap-4
             opacity-0 group-hover:opacity-100
             transition-opacity duration-300
           "
         >
          <button
             aria-label="Preview"
-           className=" p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
+            className="p-1.5 sm:p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
           >
-            <FiEye size={18} className="transition-transform duration-700 ease-in-out group-hover:rotate-360" />
+            <FiEye size={16} className="sm:w-[18px] transition-transform duration-700 ease-in-out group-hover:rotate-360" />
           </button>
 
           <button
             aria-label="Wishlist"
             onClick={handleWishlistClick}
-            className=" p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
+            className="p-1.5 sm:p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
           >
             <FiHeart
-              size={18} className={`${isWishlisted ? "fill-red-500 text-red-500" : ""} transition-transform duration-700 ease-in-out group-hover:rotate-360`}
+              size={16} className={`sm:w-[18px] ${isWishlisted ? "fill-red-500 text-red-500" : ""} transition-transform duration-700 ease-in-out group-hover:rotate-360`}
             />
           </button>
 
@@ -151,32 +151,31 @@ const handleWishlistClick = (e) => {
               e.stopPropagation();
               addToCart(product._id, 1);
             }}
-                      className=" p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
-
+            className="p-1.5 sm:p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
           >
-            <FiShoppingCart size={18} className="transition-transform duration-700 ease-in-out group-hover:rotate-360" />
+            <FiShoppingCart size={16} className="sm:w-[18px] transition-transform duration-700 ease-in-out group-hover:rotate-360" />
           </button>
         </div>
       </div>
 
       {/* CONTENT */}
-      <div className="p-3 sm:p-4">
-        <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-1">
+      <div className="p-2 sm:p-3 md:p-4">
+        <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 dark:text-white line-clamp-1">
           {title}
         </h3>
 
-        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-1">
+        <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5 sm:mt-1">
           {description}
         </p>
 
         {/* PRICE + RATING */}
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-pink-600 dark:text-pink-400 font-bold text-sm sm:text-base">
+        <div className="flex items-center justify-between mt-2 sm:mt-3">
+          <span className="text-pink-600 dark:text-pink-400 font-bold text-xs sm:text-sm md:text-base">
             AED {price}
           </span>
 
-          <div className="flex items-center gap-1 text-sm">
-            <FaStar className="text-yellow-400" />
+          <div className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm">
+            <FaStar className="text-yellow-400 w-3 h-3 sm:w-4 sm:h-4" />
             <span className="text-gray-700 dark:text-gray-300">
               {rating}
             </span>

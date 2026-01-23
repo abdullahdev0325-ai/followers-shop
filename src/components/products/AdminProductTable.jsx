@@ -8,6 +8,9 @@ import { callPrivateApi } from "@/services/callApis";
 import { useAuth } from "@/hooks/authContext";
 import Pagination from "../ui/Pagination";
 import DashboardLoading from "@/app/admin/loading";
+import { normalizeImagePath } from "@/lib/utils/normalizeImagePath";
+import GradientWrapper from "../ui/Gradient";
+import { HeroHeading } from "../ui/Heading";
 
 const PAGE_SIZE = 6;
 
@@ -86,17 +89,19 @@ export default function AdminProductPage() {
       <Toaster position="top-right" />
 
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Products</h1>
+        <HeroHeading text1="Products" />
+<GradientWrapper>
 
         <button
           onClick={() => {
             setEditProduct(null);
             setShowForm(true);
           }}
-          className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600"
+          className="bg-transparent text-white px-4 py-2 rounded "
         >
           Add New Product
         </button>
+</GradientWrapper>
       </div>
 
       {/* Search */}
@@ -106,28 +111,28 @@ export default function AdminProductPage() {
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded w-full max-w-sm"
+          className="border border-gray-300 px-3 py-2 rounded w-full max-w-sm"
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded shadow">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-pink-300">
+      <div className="overflow-x-auto border border-gray-300  rounded shadow-lg">
+        <table className="w-full table-auto border border-gray-300-collapse">
+          <thead className=" text-white  bg-gradient-to-r from-red-600 to-pink-600 hover:from-pink-600 hover:to-red-600 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-pink-500/40">
             <tr>
-              <th className="border px-2 py-1">Image</th>
-              <th className="border px-2 py-1">Name</th>
-              <th className="border px-2 py-1">Price</th>
-              <th className="border px-2 py-1">Category</th>
-              <th className="border px-2 py-1">Gender</th>
-              <th className="border px-2 py-1">Color</th>
-              <th className="border px-2 py-1">Size</th>
-              <th className="border px-2 py-1">Delivery</th>
-              <th className="border px-2 py-1">Occasions</th>
-              <th className="border px-2 py-1">Premium</th>
-              <th className="border px-2 py-1">Badge</th>
-              <th className="border px-2 py-1">Slug</th>
-              <th className="border px-2 py-1">Actions</th>
+              <th className="border border-gray-300 px-8 py-3">Image</th>
+              <th className="border border-gray-300 px-8 py-3">Name</th>
+              <th className="border border-gray-300 px-8 py-3">Price</th>
+              <th className="border border-gray-300 px-8 py-3">Category</th>
+              <th className="border border-gray-300 px-8 py-3">Gender</th>
+              <th className="border border-gray-300 px-8 py-3">Color</th>
+              <th className="border border-gray-300 px-8 py-3">Size</th>
+              <th className="border border-gray-300 px-8 py-3">Delivery</th>
+              <th className="border border-gray-300 px-8 py-3">Occasions</th>
+              <th className="border border-gray-300 px-8 py-3">Premium</th>
+              <th className="border border-gray-300 px-8 py-3">Badge</th>
+              <th className="border border-gray-300 px-8 py-3">Slug</th>
+              <th className="border border-gray-300 px-8 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -140,36 +145,36 @@ export default function AdminProductPage() {
                 </td>
               </tr>
             ) : (paginatedProducts &&
-              paginatedProducts.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="border px-2 py-1">
+              paginatedProducts.map((p,i) => (
+                <tr key={p._id || i} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-8 py-1">
                     {p.image ? (
-                      <Image src={p.image} alt={p.name} width={50} height={50} className="object-cover rounded" />
+                      <Image src={normalizeImagePath(p.image)} alt={p.name} width={50} height={50} className="object-cover rounded" />
                     ) : (
                       "No Image"
                     )}
                   </td>
-                  <td className="border px-2 py-1">{p.name}</td>
-                  <td className="border px-2 py-1">${p.price}</td>
-                  <td className="border px-2 py-1">{p.category}</td>
-                  <td className="border px-2 py-1">{p.gender}</td>
-                  <td className="border px-2 py-1">{p.colour}</td>
-                  <td className="border px-2 py-1">{p.size}</td>
-                  <td className="border px-2 py-1">{p.delivery}</td>
-                  <td className="border px-2 py-1">{p.occasions}</td>
-                  <td className="border px-2 py-1">{p.premium ? "Yes" : "No"}</td>
-                  <td className="border px-2 py-1">{p.badge || "-"}</td>
-                  <td className="border px-2 py-1">{p.slug}</td>
-                  <td className="border px-2 py-1 flex gap-2">
+                  <td className="border border-gray-300 px-8 py-1">{p.name}</td>
+                  <td className="border border-gray-300 px-8 py-1">${p.price}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.category}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.gender}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.colour}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.size}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.delivery}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.occasions}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.premium ? "Yes" : "No"}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.badge || "-"}</td>
+                  <td className="border border-gray-300 px-8 py-1">{p.slug}</td>
+                  <td className="border border-gray-300 flex flex-row items-center justify-center gap-4 h-full px-8 py-1 flex gap-2">
                     <button
                       onClick={() => handleEdit(p)}
-                      className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                      className="bg-blue-600 text-white px-8 py-1 rounded hover:bg-blue-700"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(p.id)}
-                      className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                      className="bg-red-600 text-white px-8 py-1 rounded hover:bg-red-700"
                     >
                       Delete
                     </button>

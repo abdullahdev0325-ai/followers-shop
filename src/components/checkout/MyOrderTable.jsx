@@ -53,7 +53,7 @@ export default function MyOrdersTable() {
             <tr>
               <td colSpan={5} className="text-center py-10">No orders found</td>
             </tr>
-          ) : (
+          ) : (orders &&
             orders.map(order,i => (
               <tr key={order._id || i}>
                 <td className="px-6 py-4 text-sm">{order._id}</td>

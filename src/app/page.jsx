@@ -23,7 +23,7 @@ export default function page() {
   // categories
   const fetchCategories = async () => {
     const res = await callPublicApi("/categories", "GET", undefined);
-    console.log("res", res);
+    console.log("res categories", res);
 
     if (res.success) setCategories(res.data?.categories || []);
   };
@@ -39,7 +39,9 @@ export default function page() {
   // products by category
   const fetchProducts = async (slug) => {
     const res = await callPublicApi(`/products?category=${slug}&limit=8`, "GET", undefined);
-    console.log("res", res);
+   
+    
+    console.log("res in products", res);
 
     return res.success ? res.data : [];
   };
@@ -71,7 +73,6 @@ export default function page() {
     <main>
       <HomePage />
 
-      <AboutAromaFollower />
 
       {/* ✅ dynamic occasions */}
       <OccasionSlider occasions={occasions} />
@@ -95,6 +96,8 @@ export default function page() {
       {/* 🔒 baqi sab same */}
       <HotDeals />
       <BestSelling />
+            <AboutAromaFollower />
+
       {/* <MidnightDeliveryBanner /> */}
       <Testimonials />
     </main>

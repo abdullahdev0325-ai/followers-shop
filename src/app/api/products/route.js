@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { connectDB } from '@/lib/connectDB';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
+import Occasion from '@/models/Occasion';
 import { logRequest, logResponse } from '@/lib/apiLogger';
 import { uploadImage, uploadMultipleImages } from '@/components/cloudinary/ImageUploader';
 import { generateSlug } from '@/lib/generateSlug';
@@ -123,53 +124,147 @@ export async function POST(request) {
 
 /**
  * GET /api/products
- * Paginated + filter by category/occasion
+ * Paginated + filter by category/occasion/color/size with facets
  */
 export async function GET(request) {
   try {
     await connectDB();
+
     const url = new URL(request.url);
 
-    const category = url.searchParams.get('category');
+    let category = url.searchParams.get('category');
     const occasion = url.searchParams.get('occasion');
+    const color = url.searchParams.get('color');
+    const size = url.searchParams.get('size');
     const search = url.searchParams.get('search');
+    const minPrice = Number(url.searchParams.get('minPrice') || 0);
+    const maxPrice = Number(url.searchParams.get('maxPrice') || 100000);
+    const sort = url.searchParams.get('sort') || 'recommended';
+
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
-    const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get('limit') || '12', 10)));
+    const limit = Math.min(100, parseInt(url.searchParams.get('limit') || '12', 10));
     const skip = (page - 1) * limit;
-    console.log("category", category);
-    console.log("occasion", occasion);
 
     const query = {};
+
+    // Category - resolve by slug or id
     if (category) {
+      // اگر category ObjectId ہے تو directly استعمال کریں
       if (mongoose.Types.ObjectId.isValid(category)) {
         query.category = category;
       } else {
-        // If not a valid ObjectId, try to find category by slug (or name)
-        const catDoc = await Category.findOne({ slug: category });
-        if (catDoc) {
-          query.category = catDoc._id;
-        } else {
-          // If category not found by slug, return empty, or ignore filter?
-          // Returning empty result seems correct if the filter is invalid
-          return NextResponse.json({ success: true, data: [], pagination: { page, limit, total: 0, totalPages: 0 } }, { status: 200 });
+        // اگر slug ہے تو category find کر کے id دیں
+        const categoryDoc = await Category.findOne({ slug: category }).select('_id');
+        if (categoryDoc) {
+          query.category = categoryDoc._id;
         }
       }
     }
-    if (occasion) query.occasions = { $in: [occasion] };
-    if (search) query.name = { $regex: search, $options: 'i' };
 
-    const total = await Product.countDocuments(query);
-    const totalPages = Math.ceil(total / limit);
-    const products = await Product.find(query).skip(skip).limit(limit).lean();
+    // Occasion - resolve by slug or id
+    if (occasion) {
+      if (mongoose.Types.ObjectId.isValid(occasion)) {
+        query.occasions = occasion;
+      } else {
+        // اگر slug ہے تو occasion find کر کے id دیں
+        const occasionDoc = await Occasion.findOne({ slug: occasion }).select('_id');
+        if (occasionDoc) {
+          query.occasions = occasionDoc._id;
+        }
+      }
+    }
+
+    // Color
+    if (color) query.colour = color;
+
+    // Size
+    if (size) query.size = size;
+
+    // Search
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Price
+    query.price = { $gte: minPrice, $lte: maxPrice };
+
+    // Sorting
+    let sortQuery = {};
+    if (sort === 'lowToHigh') sortQuery.price = 1;
+    if (sort === 'highToLow') sortQuery.price = -1;
+    if (sort === 'AtoZ') sortQuery.name = 1;
+    if (sort === 'ZtoA') sortQuery.name = -1;
+
+    // Get facets from all products (ignoring current filters for facet counts)
+    const allProducts = await Product.find(query).lean();
+
+    // Calculate facets
+    const facets = {
+      categories: {},
+      occasions: {},
+      colors: {},
+      sizes: {},
+    };
+
+    allProducts.forEach(product => {
+      // Categories
+      if (product.category) {
+        facets.categories[product.category] = (facets.categories[product.category] || 0) + 1;
+      }
+
+      // Occasions
+      if (Array.isArray(product.occasions)) {
+        product.occasions.forEach(occ => {
+          facets.occasions[occ] = (facets.occasions[occ] || 0) + 1;
+        });
+      }
+
+      // Colors
+      if (product.colour) {
+        facets.colors[product.colour] = (facets.colors[product.colour] || 0) + 1;
+      }
+
+      // Sizes
+      if (Array.isArray(product.size)) {
+        product.size.forEach(s => {
+          facets.sizes[s] = (facets.sizes[s] || 0) + 1;
+        });
+      } else if (product.size) {
+        facets.sizes[product.size] = (facets.sizes[product.size] || 0) + 1;
+      }
+    });
+
+    const total = allProducts.length;
+    const products = await Product.find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     return NextResponse.json({
       success: true,
-      data: products.map(p => ({ id: p._id.toString(), ...p })),
-      pagination: { page, limit, total, totalPages, hasNextPage: page < totalPages, hasPrevPage: page > 1 }
-    }, { status: 200 });
+      data: products,
+      facets: facets,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
 
   } catch (error) {
-    console.error('Product GET error:', error);
-    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+    console.error('❌ GET /api/products Error:', error);
+    console.error('Error Stack:', error.stack);
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 });
   }
 }
+

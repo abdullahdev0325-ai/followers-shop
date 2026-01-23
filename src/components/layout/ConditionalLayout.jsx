@@ -6,6 +6,7 @@ import Footer from './Footer';
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
+
   const isAdminRoute = pathname?.startsWith('/admin');
 
   // Don't show public Navbar and Footer on admin routes
@@ -21,9 +22,3 @@ export default function ConditionalLayout({ children }) {
     </>
   );
 }
-
-
-
-
-
-

@@ -1,297 +1,48 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { callPublicApi } from "@/services/callApis";
 
-// Dummy products data - Single source of truth
-const dummyProducts = [
-  {
-    id: 1,
-    name: 'Pure Love Heart Box',
-    price: 309.90,
-    originalPrice: 466.42,
-    discount: 20,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Red',
-    size: 'Medium',
-    slug: 'pure-love-heart-box',
-    description: 'A beautiful heart-shaped box filled with red roses and chocolates. Perfect for expressing your love and affection.',
-    seo_title: 'Pure Love Heart Box - Red Roses & Chocolates | Aroma Flowers',
-    seo_description: 'Buy Pure Love Heart Box with red roses and chocolates online in Dubai & UAE. Same-day delivery available.',
-  },
-  {
-    id: 2,
-    name: 'Beloved Red Roses Heart Box',
-    price: 299.09,
-    originalPrice: 482.46,
-    discount: 38,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Red',
-    size: 'Large',
-    slug: 'beloved-red-roses-heart-box',
-  },
-  {
-    id: 3,
-    name: 'Loving Heart Choco Rose Box',
-    price: 360.36,
-    originalPrice: 600.60,
-    discount: 40,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'BIRTHDAY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Mix Color',
-    size: 'Medium',
-    slug: 'loving-heart-choco-rose-box',
-  },
-  {
-    id: 4,
-    name: 'Vivid Love Flower Box',
-    price: 249.90,
-    originalPrice: 333.20,
-    discount: 25,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'ANNIVERSARY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Pink',
-    size: 'Medium',
-    slug: 'vivid-love-flower-box',
-  },
-  {
-    id: 5,
-    name: 'Red Roses with Ferrero Topping Stylish Black Box',
-    price: 389.61,
-    originalPrice: 599.40,
-    discount: 35,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Black',
-    size: 'Large',
-    slug: 'red-roses-ferrero-black-box',
-  },
-  {
-    id: 6,
-    name: 'Trendy Black Round Box',
-    price: 283.50,
-    originalPrice: 399.30,
-    discount: 29,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'BIRTHDAY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Black',
-    size: 'Medium',
-    slug: 'trendy-black-round-box',
-  },
-  {
-    id: 7,
-    name: 'Blissful Love Fly Box',
-    price: 318.00,
-    originalPrice: 600.00,
-    discount: 47,
-    image: '🦋',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Mix Color',
-    size: 'Large',
-    slug: 'blissful-love-fly-box',
-  },
-  {
-    id: 8,
-    name: 'Delicate Love Roses Bouquet',
-    price: 269.10,
-    originalPrice: 299.00,
-    discount: 10,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'ANNIVERSARY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Pink',
-    size: 'Medium',
-    slug: 'delicate-love-roses-bouquet',
-  },
-  {
-    id: 9,
-    name: 'Cool Red Roses Mickey Box',
-    price: 354.00,
-    originalPrice: 600.00,
-    discount: 41,
-    image: '🎁',
-    category: 'FOR HER',
-    occasion: 'BIRTHDAY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Red',
-    size: 'Large',
-    slug: 'cool-red-roses-mickey-box',
-  },
-  {
-    id: 10,
-    name: 'Elegant Black Heart Box',
-    price: 330.00,
-    originalPrice: 500.00,
-    discount: 34,
-    image: '💝',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Black',
-    size: 'Medium',
-    slug: 'elegant-black-heart-box',
-  },
-  {
-    id: 11,
-    name: 'Love Can Fly Red Roses Black Box',
-    price: 285.00,
-    originalPrice: 300.00,
-    discount: 5,
-    image: '🦋',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Black',
-    size: 'Medium',
-    slug: 'love-can-fly-red-roses-black-box',
-  },
-  {
-    id: 12,
-    name: 'Winged Love Box',
-    price: 354.00,
-    originalPrice: 600.00,
-    discount: 41,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'ANNIVERSARY',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Mix Color',
-    size: 'Large',
-    slug: 'winged-love-box',
-  },
-  {
-    id: 13,
-    name: 'Love Floral Box',
-    price: 299.25,
-    originalPrice: 399.00,
-    discount: 25,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Pink',
-    size: 'Medium',
-    slug: 'love-floral-box',
-  },
-  {
-    id: 14,
-    name: 'Romantic Love Bouquet',
-    price: 287.28,
-    originalPrice: 399.00,
-    discount: 28,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'ANNIVERSARY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Red',
-    size: 'Medium',
-    slug: 'romantic-love-bouquet',
-  },
-  {
-    id: 15,
-    name: 'Majestic Red Roses Box with Ferrero Topping',
-    price: 310.20,
-    originalPrice: 500.00,
-    discount: 38,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Red',
-    size: 'Large',
-    slug: 'majestic-red-roses-box-ferrero',
-  },
-  {
-    id: 16,
-    name: 'Floral Butterfly For Her',
-    price: 249.90,
-    originalPrice: 312.38,
-    discount: 20,
-    image: '🦋',
-    category: 'FOR HER',
-    occasion: 'BIRTHDAY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Mix Color',
-    size: 'Medium',
-    slug: 'floral-butterfly-for-her',
-  },
-  {
-    id: 17,
-    name: 'Gorgeous Floral Basket',
-    price: 310.20,
-    originalPrice: 500.00,
-    discount: 38,
-    image: '💐',
-    category: 'FOR HER',
-    occasion: 'ANNIVERSARY',
-    deliveryTime: 'Same Day',
-    gender: 'her',
-    color: 'Pink',
-    size: 'Large',
-    slug: 'gorgeous-floral-basket',
-  },
-  {
-    id: 18,
-    name: 'Black & White Beauty',
-    price: 280.00,
-    originalPrice: 400.00,
-    discount: 30,
-    image: '🌹',
-    category: 'FOR HER',
-    occasion: 'LOVE & ROMANCE',
-    deliveryTime: 'Midnight',
-    gender: 'her',
-    color: 'Black',
-    size: 'Medium',
-    slug: 'black-white-beauty',
-  },
-];
+export const fetchProducts = createAsyncThunk(
+  "products/fetch",
+  async (query = "") => {
+    const res = await callPublicApi(`/products${query}`, "GET");
+    console.log("res in product",res);
+    return res.data;
+  }
+);
 
-const initialState = {
-  products: dummyProducts,
-  loading: false,
-  error: null,
-};
+const productSlice = createSlice({
+  name: "products",
+  initialState: {
+    products: [],
+    filteredProducts: [],
+    loading: true,
+    page: 1,
+  },
 
-const productsSlice = createSlice({
-  name: 'products',
-  initialState,
   reducers: {
-    setProducts: (state, action) => {
-      state.products = action.payload;
+    setFilteredProducts(state, action) {
+      state.filteredProducts = action.payload;
     },
+    setPage(state, action) {
+      state.page = action.payload;
+    },
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.products = action.payload;
+        state.filteredProducts = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchProducts.rejected, (state) => {
+        state.loading = false;
+      });
   },
 });
 
-export const { setProducts } = productsSlice.actions;
-export default productsSlice.reducer;
+export const { setFilteredProducts, setPage } = productSlice.actions;
+export default productSlice.reducer;

@@ -16,15 +16,17 @@ export default function AboutAromaFollower() {
   }, []);
 
   return (
-    <section className="py-10 bg-white dark:bg-zinc-900">
-      <main className="w-[85%] mx-auto mt-20 text-gray-900 font-sans ">
-        <div className="container mx-auto py-8">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
+    <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-white dark:bg-zinc-900">
+      <main className="w-full sm:w-[90%] md:w-[85%] mx-auto px-3 sm:px-4 md:px-6 mt-4 sm:mt-8 md:mt-12 lg:mt-20 text-gray-900 font-sans ">
+        <div className="container mx-auto py-4 sm:py-6 md:py-8">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12">
             {/* Image Grid */}
-            <div className=" w-[100%]  ml-2 xl:ml-7 mb-3 lg:mb-0">
+            <div className="w-full lg:w-1/2 px-0 sm:px-2">
               <ImageGrid />
             </div>
-            <AboutData />
+            <div className="w-full lg:w-1/2">
+              <AboutData />
+            </div>
           </div>
         </div>
       </main>

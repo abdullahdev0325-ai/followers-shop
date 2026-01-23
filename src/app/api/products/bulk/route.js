@@ -70,7 +70,7 @@ export async function POST(request) {
         premium: Boolean(p.premium),
         image: image || null,          // direct URL
         images: Array.isArray(p.images) ? p.images : [],
-        slugGenerated,
+  slug: slugGenerated, // ✅ REQUIRED FIELD FIXED
       });
 
       createdProducts.push({

@@ -1,10 +1,19 @@
 "use client";
 
 import { useProduct } from "@/hooks/ProductContext";
+import { useSelector } from "react-redux";
 import { FaThLarge, FaTh } from "react-icons/fa";
 
 export default function TopBar() {
-  const { filters, setFilters, filteredProducts } = useProduct();
+  const productContext = useProduct();
+  const reduxProducts = useSelector((state) => state.products?.filteredProducts);
+  
+  // Use Redux products if available, otherwise use ProductContext
+  const filteredProducts = reduxProducts || productContext?.filteredProducts;
+  const filters = productContext?.filters;
+  const setFilters = productContext?.setFilters;
+
+  if (!setFilters || !filters) return null;
 
   return (
     <div className="mb-6 space-y-4">
@@ -16,7 +25,7 @@ export default function TopBar() {
             Results
           </p>
           <p className="text-lg font-bold text-pink-600 dark:text-pink-400">
-            {filteredProducts.length} products
+            {Array.isArray(filteredProducts) ? filteredProducts.length : 0} products
           </p>
         </div>
 
