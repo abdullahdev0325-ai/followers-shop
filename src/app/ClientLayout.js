@@ -1,4 +1,6 @@
 
+'use client';
+
 import ReduxProvider from "@/lib/ReduxProvider";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "@/hooks/CartContext";
