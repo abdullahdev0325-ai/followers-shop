@@ -7,6 +7,7 @@ import Occasion from '@/models/Occasion';
 import { logRequest, logResponse } from '@/lib/apiLogger';
 import { uploadImage, uploadMultipleImages } from '@/components/cloudinary/ImageUploader';
 import { generateSlug } from '@/lib/generateSlug';
+import { verifyAdmin } from '@/lib/auth';
 
 /**
  * POST /api/products
@@ -15,6 +16,8 @@ import { generateSlug } from '@/lib/generateSlug';
 export async function POST(request) {
   try {
     await connectDB();
+      const { error } = verifyAdmin(request);
+        if (error) return error;
     const body = await request.formData(); // use FormData for image files
     logRequest('/api/products', 'POST', { body });
 

@@ -8,9 +8,9 @@ export const signup = createAsyncThunk('auth/signup', async (userData, { rejectW
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
-    
+
     const data = await response.json();
-    console.log("res",data);
+    console.log("res", data);
     if (!response.ok) {
       return rejectWithValue(data.message || 'Signup failed');
     }
@@ -30,24 +30,24 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
     console.log('\n═══════════════════════════════════════════════════════════');
     console.log('🔐 [CLIENT] Login Request Initiated');
     console.log(`📧 Email: ${credentials.email}`);
-    
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
-    
+
     const data = await response.json();
     console.log('✅ [CLIENT] Login Response Received:', data);
-    
+
     if (!response.ok) {
       console.log(`❌ [CLIENT] Login Failed: ${data.message}`);
       console.log('═══════════════════════════════════════════════════════════\n');
       return rejectWithValue(data.message || 'Login failed');
     }
-    
+
     // Store token in localStorage
-    if (data.token) {
+    if (data.token && typeof window !== 'undefined') {
       localStorage.setItem('token', data.token);
       console.log(`✅ [CLIENT] Token Stored in localStorage`);
       console.log(`👤 User Role: ${data.user?.role?.toUpperCase()}`);
@@ -65,7 +65,10 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
 // Async thunk to get current user
 export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (_, { rejectWithValue }) => {
   try {
-    const token = localStorage.getItem('token');
+    let token = null;
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('token');
+    }
     if (!token) {
       return rejectWithValue('No token found');
     }
@@ -78,28 +81,33 @@ export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (_, 
     });
 
     const data = await response.json();
-    console.log("res in login",data);
-    
+    console.log("res in login", data);
+
     if (!response.ok) {
       // Token invalid, remove it
-      localStorage.removeItem('token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+      }
       return rejectWithValue(data.message || 'Authentication failed');
     }
-    return data.data.user;
   } catch (error) {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+    }
     return rejectWithValue(error.message || 'Authentication failed');
   }
 });
 
 // Async thunk to set token (for token handler)
 export const setToken = createAsyncThunk('auth/setToken', async (token, { dispatch }) => {
-  if (token) {
-    localStorage.setItem('token', token);
-    // Fetch user data
-    dispatch(getCurrentUser());
-  } else {
-    localStorage.removeItem('token');
+  if (typeof window !== 'undefined') {
+    if (token) {
+      localStorage.setItem('token', token);
+      // Fetch user data
+      dispatch(getCurrentUser());
+    } else {
+      localStorage.removeItem('token');
+    }
   }
   return token;
 });
@@ -111,24 +119,28 @@ export const logoutAsync = createAsyncThunk('auth/logoutAsync', async (_, { reje
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
-    
+
     const data = await response.json();
     console.log('Logout response:', data);
-    
+
     if (!response.ok) {
       return rejectWithValue(data.message || 'Logout failed');
     }
-    
+
     // Remove from localStorage on success
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+
     return { success: true };
   } catch (error) {
     console.error('Logout error:', error);
     // Still remove from localStorage even if API fails
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     return rejectWithValue(error.message || 'Logout failed');
   }
 });
@@ -149,7 +161,9 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+      }
     },
     clearError: (state) => {
       state.error = null;
@@ -214,8 +228,10 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
-        const token = localStorage.getItem('token');
-        state.token = token;
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('token');
+          state.token = token;
+        }
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
