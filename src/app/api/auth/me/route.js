@@ -4,7 +4,8 @@ import { authenticateRequest } from '@/lib/middleware/auth';
 export async function GET(request) {
   try {
     const user = await authenticateRequest(request);
-
+ console.log("user",user);
+ 
     if (!user) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },

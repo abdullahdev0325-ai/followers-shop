@@ -18,9 +18,13 @@ import { logout } from '@/lib/slices/authSlice';
 import { useAppCategories } from '@/hooks/CategoriesContext';
 // import AuthModal from '@/components/auth/AuthModal';
 import NavbarButtons from './NavbarButton';
+import { useAuth } from '@/hooks/authContext';
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  console.log("usr in navbar",user);
+  
   const dispatch = useDispatch();
   const { categories, loading: categoriesLoading } = useAppCategories();
 
@@ -31,19 +35,19 @@ export default function Navbar() {
   const [localUser, setLocalUser] = useState(null);
 
   // Check localStorage for user on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem('user');
 
-    if (storedUser) {
-      try {
-        setLocalUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error('Error parsing user from localStorage:', err);
-      }
-    }
-  }, []);
+  //   if (storedUser) {
+  //     try {
+  //       setLocalUser(JSON.parse(storedUser));
+  //     } catch (err) {
+  //       console.error('Error parsing user from localStorage:', err);
+  //     }
+  //   }
+  // }, []);
 
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
 

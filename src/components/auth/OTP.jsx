@@ -16,15 +16,28 @@ export default function OTP() {
   // For resend OTP
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const storedEmail = localStorage.getItem('otp_email');
-    if (!storedEmail) {
-      router.push('/auth/register');
-    } else {
+    if (storedEmail) {
       setEmail(storedEmail);
     }
-  }, [router]);
+    // We defer the redirection logic to after mount to avoid issues during initial render
+    // However, if we return null when not mounted, this useEffect running on client is fine.
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      const storedEmail = localStorage.getItem('otp_email');
+      if (!storedEmail) {
+        router.push('/auth/register');
+      }
+    }
+  }, [mounted, router]);
+
+  if (!mounted) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,8 +73,8 @@ export default function OTP() {
       const res = await callPublicApi('/auth/resend-otp', 'POST', {
         email,
       });
-      console.log("res",res);
-      
+      console.log("res", res);
+
       setResendMessage(res.message || 'OTP resent successfully.');
     } catch (err) {
       setResendMessage(err?.message || 'Failed to resend OTP.');

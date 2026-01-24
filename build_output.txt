@@ -1,0 +1,98 @@
+
+> uae_followers_project@0.1.0 build
+> next build
+
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.mjs to protect your application from malicious users.
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.9s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+  Generating static pages using 7 workers (0/44) ...
+  Generating static pages using 7 workers (11/44) 
+  Generating static pages using 7 workers (22/44) 
+Current Filters: {
+  category: '',
+  occasion: '',
+  color: '',
+  size: '',
+  search: '',
+  price: [ 0, 1000 ],
+  sort: 'recommended',
+  page: 1,
+  limit: 24
+}
+Facets from backend: { categories: {}, occasions: {}, colors: {}, sizes: {} }
+  Generating static pages using 7 workers (33/44) 
+✓ Generating static pages using 7 workers (44/44) in 2.3s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /account
+├ ○ /admin
+├ ○ /admin/blogs
+├ ○ /admin/categories
+├ ○ /admin/occasions
+├ ○ /admin/orders
+├ ○ /admin/product
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/auth/resend-otp
+├ ƒ /api/auth/signup
+├ ƒ /api/auth/verify-otp
+├ ƒ /api/blogs
+├ ƒ /api/blogs/[id]
+├ ƒ /api/blogs/bulk-delete
+├ ƒ /api/cart
+├ ƒ /api/cart/add
+├ ƒ /api/cart/clear
+├ ƒ /api/cart/update
+├ ƒ /api/categories
+├ ƒ /api/categories/[id]
+├ ƒ /api/categories/bulk
+├ ƒ /api/checkout
+├ ƒ /api/debug
+├ ƒ /api/occasions
+├ ƒ /api/occasions/[id]
+├ ƒ /api/occasions/bulk
+├ ƒ /api/orders
+├ ƒ /api/orders/my-order
+├ ƒ /api/payment/create-intent
+├ ƒ /api/products
+├ ƒ /api/products/[id]
+├ ƒ /api/products/bulk
+├ ƒ /api/wishlist
+├ ○ /auth/login
+├ ○ /auth/otp
+├ ○ /auth/register
+├ ○ /blog
+├ ƒ /category/[slug]
+├ ○ /checkout
+├ ○ /checkout/cancel
+├ ○ /checkout/success
+├ ƒ /occasions/[occasion]
+├ ○ /orders
+├ ○ /product
+└ ƒ /product/[id]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+npm notice
+npm notice New minor version of npm available! 11.7.0 -> 11.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.8.0
+npm notice To update run: npm install -g npm@11.8.0
+npm notice
