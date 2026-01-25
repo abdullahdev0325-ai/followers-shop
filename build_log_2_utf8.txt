@@ -1,0 +1,40 @@
+
+> uae_followers_project@0.1.0 build
+> next build
+
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.mjs to protect your application from malicious users.
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.9s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+MongoDB URI: mongodb+srv://abdullahdev0325_db_user:u2CDSfQgDYL1bNfF@cluster0.i1bdu8k.mongodb.net/aroma_db?retryWrites=true&w=majority
+  Generating static pages using 7 workers (0/44) ...
+  Generating static pages using 7 workers (11/44) 
+usr in navbar null
+usr in navbar null
+usr in navbar null
+usr in navbar null
+usr in navbar null
+usr in navbar null
+usr in navbar null
+Error occurred prerendering page "/auth/login". Read more: https://nextjs.org/docs/messages/prerender-error
+ReferenceError: useEffect is not defined
+    at j (E:\abdullah followers shop\followers-shop\.next\server\chunks\ssr\src_components_auth_Login_jsx_a42fe701._.js:1:289) {
+  digest: '2158291826'
+}
+Export encountered an error on /auth/login/page: /auth/login, exiting the build.
+⨯ Next.js build worker exited with code: 1 and signal: null
+npm notice
+npm notice New minor version of npm available! 11.7.0 -> 11.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.8.0
+npm notice To update run: npm install -g npm@11.8.0
+npm notice

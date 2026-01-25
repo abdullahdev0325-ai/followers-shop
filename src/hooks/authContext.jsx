@@ -1,84 +1,119 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
+
+import { callPublicApi,callPrivateApi } from '@/services/callApis';
+// 👆 yahan tumhara axios wrapper
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
-  const [user, setUser] = useState(null); // user object
-  const [token, setToken] = useState(null); // JWT token
-  const [loading, setLoading] = useState(true); // loading state
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [hasFetchedUser, setHasFetchedUser] = useState(false);
 
-  // Load token from localStorage on mount
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+
+  /* ======================================================
+     LOAD USER ONCE (page refresh)
+  ====================================================== */
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken) {
+
+    if (storedToken && !hasFetchedUser) {
       setToken(storedToken);
-      fetchCurrentUser(storedToken); // ✅ fetch user from /auth/me
+      fetchCurrentUser(storedToken).finally(() => {
+        setHasFetchedUser(true);
+      });
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [hasFetchedUser]);
 
-  // Login function
-  const login = async (credentials) => {
+  /* ======================================================
+     SIGNUP
+  ====================================================== */
+  const signup = async (userData) => {
     try {
-      const res = await axios.post('/api/auth/login', credentials, {
-        withCredentials: true, // cookies
-      });
+      const res = await callPublicApi('/auth/signup', 'POST', userData);
 
-      const { token: jwtToken, user: userData } = res.data;
-
-      if (jwtToken) {
-        localStorage.setItem('token', jwtToken);
-        setToken(jwtToken);
-        setUser(userData);
-        toast.success('Login successful!');
-      }
+      toast.success('Account created successfully');
 
       return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error(error.response?.data?.message || 'Login failed');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Signup failed');
       return false;
     }
   };
 
-  // Logout function
-  const logout = async () => {
+  /* ======================================================
+     LOGIN3
+  ====================================================== */
+  const login = async (credentials) => {
     try {
-      await axios.post('/api/auth/logout', {}, { withCredentials: true });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('token');
-      setToken(null);
-      setUser(null);
-      router.push('/login');
-      toast.success('Logged out');
+      const res = await callPublicApi('/auth/login', 'POST', credentials);
+      console.log("res",res);
+      
+      const { token, user } = res;
+
+      // console.log("token saved",token,user);
+      localStorage.setItem('token', token);
+       
+      setToken(token);
+      setUser(user);
+      //  console.log("token user");
+
+      toast.success('Login successful');
+
+      return true;
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Login failed');
+      return false;
     }
   };
 
-  // Fetch current user from /auth/me
+  /* ======================================================
+     GET CURRENT USER
+  ====================================================== */
   const fetchCurrentUser = async (tokenParam) => {
     try {
-       const res=await callPrivateApi("/auth/me","GET",undefined,tokenParam)
-    console.log("res in me",res);
-    
+      const res = await callPrivateApi(
+        '/auth/me',
+        'GET',
+        undefined,
+        tokenParam
+      );
 
       setUser(res.data.user);
-    } catch (error) {
-      console.error('Fetch current user error:', error);
-      logout(); // token invalid
+    } catch (err) {
+      console.error('Auth failed');
+      logout();
     } finally {
       setLoading(false);
+    }
+  };
+
+  /* ======================================================
+     LOGOUT
+  ====================================================== */
+  const logout = async () => {
+    try {
+      await callPrivateApi('/auth/logout', 'POST');
+    } catch (err) {
+      console.log('Logout error ignored');
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
+      setToken(null);
+      setHasFetchedUser(false);
+      router.push('/login');
+      toast.success('Logged out');
     }
   };
 
@@ -88,9 +123,12 @@ export function AuthProvider({ children }) {
         user,
         token,
         loading,
+
+        signup,
         login,
         logout,
         fetchCurrentUser,
+
         isSidebarOpen,
         toggleSidebar,
         setSidebarOpen,
@@ -99,7 +137,9 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// Hook to use auth context
+/* ======================================================
+   HOOK
+====================================================== */
 export const useAuth = () => useContext(AuthContext);

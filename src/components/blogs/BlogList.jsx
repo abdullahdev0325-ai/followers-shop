@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchBlogs } from '@/lib/slices/blogsSlice';
 import BlogCard from './BlogCard';
 import { callPublicApi } from '@/services/callApis';
 
