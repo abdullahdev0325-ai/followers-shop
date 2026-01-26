@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { callPrivateApi } from "@/services/callApis";
 import CategoryForm from "./AdminCategoryForm";
 import { useAuth } from "@/hooks/authContext";
-import DashboardLoading from "@/app/admin/loading";
+import DashboardLoading from "@/components/ui/DashboardLoading";
 import GradientWrapper from "../ui/Gradient";
 import { HeroHeading } from "../ui/Heading";
 
@@ -14,7 +14,7 @@ export default function AdminCategoryPage() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
-const {token}=useAuth()
+  const { token } = useAuth()
   const fetchCategories = async () => {
     try {
       setLoading(true);
@@ -61,17 +61,17 @@ const {token}=useAuth()
       <Toaster position="top-right" />
       <div className="flex justify-between items-center mb-4">
         <HeroHeading text1="Categories" />
-       <GradientWrapper>
-         <button
-          onClick={() => {
-            setEditCategory(null);
-            setShowForm(true);
-          }}
-          className="bg-transparent text-white px-4 py-2 rounded hover:bg-pink-700"
-        >
-          Add New Category
-        </button>
-       </GradientWrapper>
+        <GradientWrapper>
+          <button
+            onClick={() => {
+              setEditCategory(null);
+              setShowForm(true);
+            }}
+            className="bg-transparent text-white px-4 py-2 rounded hover:bg-pink-700"
+          >
+            Add New Category
+          </button>
+        </GradientWrapper>
       </div>
 
       {showForm && (
@@ -103,7 +103,7 @@ const {token}=useAuth()
           <tbody>
             {loading ? (
               <tr>
-                <DashboardLoading/>
+                <DashboardLoading />
               </tr>
             ) : categories.length === 0 ? (
               <tr>
@@ -112,7 +112,7 @@ const {token}=useAuth()
                 </td>
               </tr>
             ) : (
-              categories.map((c,i) => (
+              categories.map((c, i) => (
                 <tr key={c._id || i} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-2 py-1">{c.name || "—"}</td>
                   <td className="border border-gray-300 px-2 py-1">{c.slug || "—"}</td>

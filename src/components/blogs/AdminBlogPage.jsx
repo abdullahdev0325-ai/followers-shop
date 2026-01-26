@@ -6,12 +6,12 @@ import BlogForm from "./AdminBlogForm";
 import Image from "next/image";
 import { callPrivateApi, callPublicApi } from "@/services/callApis";
 import { useAuth } from "@/hooks/authContext";
-import DashboardLoading from "@/app/admin/loading";
+import DashboardLoading from "@/components/ui/DashboardLoading";
 import ButtonGradient from "../ui/Gradient";
 import { HeroHeading, LoginHeading } from "../ui/Heading";
 import GradientWrapper from "../ui/Gradient";
 export default function AdminBlogPage() {
-  const {token}=useAuth()
+  const { token } = useAuth()
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -30,10 +30,10 @@ export default function AdminBlogPage() {
       );
 
       console.log("[AdminBlogPage] Blogs response:", res);
-              if(res.success){
+      if (res.success) {
 
-      setBlogs(res.blogs || []);
-              }
+        setBlogs(res.blogs || []);
+      }
     } catch (err) {
       console.error("[AdminBlogPage] Fetch error:", err);
       toast.error("Failed to fetch blogs");
@@ -60,11 +60,11 @@ export default function AdminBlogPage() {
       )
 
       console.log("[AdminBlogPage] Delete response:", res);
-              if(res.success){
+      if (res.success) {
 
-      toast.success(res.message || "Blog deleted successfully");
-      fetchBlogs();
-              }
+        toast.success(res.message || "Blog deleted successfully");
+        fetchBlogs();
+      }
     } catch (err) {
       console.error("[AdminBlogPage] Delete error:", err);
       toast.error("Failed to delete blog");
@@ -90,19 +90,19 @@ export default function AdminBlogPage() {
 
       {/* HEADER */}
       <div className="flex justify-between items-center mb-5">
-        
+
         <HeroHeading text1="Blog Management" />
 
         <GradientWrapper>
           <button
-          onClick={() => {
-            setEditBlog(null);
-            setShowForm(true);
-          }}
-          className="bg-transparent text-white px-5 py-2 rounded-lg font-medium  transition"
-        >
-          + Add New Blog
-        </button>
+            onClick={() => {
+              setEditBlog(null);
+              setShowForm(true);
+            }}
+            className="bg-transparent text-white px-5 py-2 rounded-lg font-medium  transition"
+          >
+            + Add New Blog
+          </button>
         </GradientWrapper>
       </div>
 
@@ -143,7 +143,7 @@ export default function AdminBlogPage() {
 
           <tbody>
             {loading ? (
-               <DashboardLoading/>
+              <DashboardLoading />
             ) : blogs.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center py-6">
@@ -171,11 +171,10 @@ export default function AdminBlogPage() {
                   <td className="border border-gray-300 px-3 py-2">{b.slug}</td>
                   <td className="border border-gray-300 px-3 py-2">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        b.status === "published"
+                      className={`px-2 py-1 rounded text-xs font-medium ${b.status === "published"
                           ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-700"
-                      }`}
+                        }`}
                     >
                       {b.status}
                     </span>

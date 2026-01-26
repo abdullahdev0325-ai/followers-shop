@@ -7,7 +7,7 @@ import Image from "next/image";
 import { callPrivateApi } from "@/services/callApis";
 import { useAuth } from "@/hooks/authContext";
 import Pagination from "../ui/Pagination";
-import DashboardLoading from "@/app/admin/loading";
+import DashboardLoading from "@/components/ui/DashboardLoading";
 import { normalizeImagePath } from "@/lib/utils/normalizeImagePath";
 import GradientWrapper from "../ui/Gradient";
 import { HeroHeading } from "../ui/Heading";
@@ -90,18 +90,18 @@ export default function AdminProductPage() {
 
       <div className="flex justify-between items-center mb-4">
         <HeroHeading text1="Products" />
-<GradientWrapper>
+        <GradientWrapper>
 
-        <button
-          onClick={() => {
-            setEditProduct(null);
-            setShowForm(true);
-          }}
-          className="bg-transparent text-white px-4 py-2 rounded "
-        >
-          Add New Product
-        </button>
-</GradientWrapper>
+          <button
+            onClick={() => {
+              setEditProduct(null);
+              setShowForm(true);
+            }}
+            className="bg-transparent text-white px-4 py-2 rounded "
+          >
+            Add New Product
+          </button>
+        </GradientWrapper>
       </div>
 
       {/* Search */}
@@ -137,7 +137,7 @@ export default function AdminProductPage() {
           </thead>
           <tbody>
             {loading ? (
-              <DashboardLoading/>
+              <DashboardLoading />
             ) : paginatedProducts.length === 0 ? (
               <tr>
                 <td colSpan="13" className="text-center py-4">
@@ -145,7 +145,7 @@ export default function AdminProductPage() {
                 </td>
               </tr>
             ) : (paginatedProducts &&
-              paginatedProducts.map((p,i) => (
+              paginatedProducts.map((p, i) => (
                 <tr key={p._id || i} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-8 py-1">
                     {p.image ? (

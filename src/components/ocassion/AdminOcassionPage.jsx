@@ -6,7 +6,7 @@ import OccasionForm from "./AdminOcassionForm";
 import { callPrivateApi } from "@/services/callApis";
 import Image from "next/image";
 import { useAuth } from "@/hooks/authContext";
-import DashboardLoading from "@/app/admin/loading";
+import DashboardLoading from "@/components/ui/DashboardLoading";
 import { HeroHeading } from "../ui/Heading";
 import GradientWrapper from "../ui/Gradient";
 
@@ -15,7 +15,7 @@ export default function AdminOccasionPage() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editOccasion, setEditOccasion] = useState(null);
-const {token}=useAuth()
+  const { token } = useAuth()
   const fetchOccasions = async () => {
     try {
       setLoading(true);
@@ -76,15 +76,15 @@ const {token}=useAuth()
         <HeroHeading text1="Occasions" />
         <GradientWrapper>
 
-        <button
-          onClick={() => {
-            setEditOccasion(null);
-            setShowForm(true);
-          }}
-          className="bg-transparent text-white px-4 py-2 rounded hover:bg-pink-700"
-        >
-          Add New Occasion
-        </button>
+          <button
+            onClick={() => {
+              setEditOccasion(null);
+              setShowForm(true);
+            }}
+            className="bg-transparent text-white px-4 py-2 rounded hover:bg-pink-700"
+          >
+            Add New Occasion
+          </button>
         </GradientWrapper>
       </div>
 
@@ -117,7 +117,7 @@ const {token}=useAuth()
           </thead>
           <tbody>
             {loading ? (
-              <DashboardLoading/>
+              <DashboardLoading />
             ) : occasions.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center py-4">
@@ -125,7 +125,7 @@ const {token}=useAuth()
                 </td>
               </tr>
             ) : (
-              occasions.map((o,i) => (
+              occasions.map((o, i) => (
                 <tr key={o._id || i} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-2 py-1">
                     {o.image ? (
