@@ -22,7 +22,8 @@ import React from 'react';
 //       "Sign up at Aroma Flowers and enjoy fresh flowers, cakes, and gifts delivery across Dubai & UAE.",
 //     type: "website",
 //   },
-// };
+
+export const dynamic = 'force-dynamic';
 
 const page = () => {
   return <Signup />;
