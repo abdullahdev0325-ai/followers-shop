@@ -200,7 +200,7 @@ export default function AdminOrders() {
                     : order.email || 'N/A';
 
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
+                    <tr key={order._id || order.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-mono text-gray-900 dark:text-white">
                           {order.id.slice(0, 8)}

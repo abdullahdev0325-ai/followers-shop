@@ -47,7 +47,7 @@ export default function Navbar() {
             <Link href="/" className="nav-link">Home</Link>
             <Link href="/product" className="nav-link">Products</Link>
             {categories?.map((cat) => (
-              <Link key={cat.id} href={`/category/${cat.slug}`} className="nav-link capitalize">{cat.name}</Link>
+              <Link key={cat._id || cat.id} href={`/category/${cat.slug}`} className="nav-link capitalize">{cat.name}</Link>
             ))}
             <Link href="/blog" className="nav-link">Blog</Link>
             {isAdmin && (
@@ -102,9 +102,8 @@ export default function Navbar() {
 
       {/* MOBILE MENU RIGHT SLIDE */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-zinc-900 shadow-xl z-50 transform transition-transform duration-300 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-zinc-900 shadow-xl z-50 transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="flex justify-end p-4">
           <button onClick={handleMenuToggle} className="p-2 hover:text-pink-600">
@@ -112,57 +111,57 @@ export default function Navbar() {
           </button>
         </div>
 
-       <div className="px-4 py-6 space-y-3 bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 shadow-lg rounded-b-2xl">
-  {/* Home */}
-  <Link
-    href="/"
-    onClick={handleMenuLinkClick}
-    className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
-  >
-    Home
-  </Link>
+        <div className="px-4 py-6 space-y-3 bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 shadow-lg rounded-b-2xl">
+          {/* Home */}
+          <Link
+            href="/"
+            onClick={handleMenuLinkClick}
+            className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
+          >
+            Home
+          </Link>
 
-  {/* Products */}
-  <Link
-    href="/product"
-    onClick={handleMenuLinkClick}
-    className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
-  >
-    All Products
-  </Link>
+          {/* Products */}
+          <Link
+            href="/product"
+            onClick={handleMenuLinkClick}
+            className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
+          >
+            All Products
+          </Link>
 
-  {/* Categories */}
-  {categories?.map((cat) => (
-    <Link
-      key={cat.id}
-      href={`/category/${cat.slug}`}
-      onClick={handleMenuLinkClick}
-      className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium capitalize text-base"
-    >
-      {cat.name}
-    </Link>
-  ))}
+          {/* Categories */}
+          {categories?.map((cat) => (
+            <Link
+              key={cat._id || cat.id}
+              href={`/category/${cat.slug}`}
+              onClick={handleMenuLinkClick}
+              className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium capitalize text-base"
+            >
+              {cat.name}
+            </Link>
+          ))}
 
-  {/* Blog */}
-  <Link
-    href="/blog"
-    onClick={handleMenuLinkClick}
-    className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
-  >
-    Blog
-  </Link>
+          {/* Blog */}
+          <Link
+            href="/blog"
+            onClick={handleMenuLinkClick}
+            className="block px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-400 transition-all font-medium text-base"
+          >
+            Blog
+          </Link>
 
-  {/* Admin Panel */}
-  {isAdmin && (
-    <Link
-      href="/admin"
-      onClick={handleMenuLinkClick}
-      className="block px-4 py-3 rounded-xl bg-pink-50 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 font-medium hover:bg-pink-100 dark:hover:bg-zinc-700 transition-all text-base"
-    >
-      Admin Panel
-    </Link>
-  )}
-</div>
+          {/* Admin Panel */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={handleMenuLinkClick}
+              className="block px-4 py-3 rounded-xl bg-pink-50 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 font-medium hover:bg-pink-100 dark:hover:bg-zinc-700 transition-all text-base"
+            >
+              Admin Panel
+            </Link>
+          )}
+        </div>
 
       </div>
     </nav>
