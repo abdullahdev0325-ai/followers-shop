@@ -3,11 +3,12 @@ import {connectDB} from '@/lib/connectDB';
 import CartItem from '@/models/CartItem';
 import { requireAuth } from '@/lib/middleware/auth';
 
-export async function POST(request) {
+export async function DELETE(request) {
   try {
     await connectDB();
     const user = await requireAuth(request);
-
+   console.log("user",user);
+   
     const result = await CartItem.deleteMany({ user_id: user.id });
     return NextResponse.json({
       success: true,

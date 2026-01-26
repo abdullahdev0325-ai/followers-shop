@@ -5,10 +5,15 @@ import { useCart } from "@/hooks/CartContext";
 import Image from "next/image";
 import { LoginHeading } from "../ui/Heading";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CartSidebar({ open, setOpen }) {
+  const router=useRouter()
   const { cartItems, updateCartItem, removeCartItem, loading } = useCart();
-
+ const handleCheckoutRouting=()=>{
+  setOpen(false)
+  router.push("/checkout")
+ }
   return (
     <div
       className={`fixed top-0 right-0 shadow-lg h-full w-96 bg-white shadow-lg transform transition-transform z-50 ${open ? "translate-x-0" : "translate-x-full"
@@ -58,13 +63,12 @@ export default function CartSidebar({ open, setOpen }) {
         </div>
       )}</div>
       <div>
-           <Link
-            href="/checkout"
+           <button onClick={handleCheckoutRouting}
                            className="w-full border-4 py-3 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 hover:from-pink-600 hover:to-red-600 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-pink-500/40 flex items-center justify-center disabled:opacity-60"
 
           >
             Checkout
-          </Link>
+          </button>
       </div>
     </div>
   );

@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/authContext';
 import toast from 'react-hot-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { callPrivateApi } from '@/services/callApis';
 
 export default function CheckoutSuccessPage() {
   const { token, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const sessionId = searchParams?.get('session_id');
-
+ console.log("session id",sessionId);
+ 
   useEffect(() => {
     if (authLoading) return;
 
@@ -25,11 +27,9 @@ export default function CheckoutSuccessPage() {
     // Clear cart after successful payment
     const clearCart = async () => {
       try {
-        const res = await fetch('/api/cart/clear', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
+        const data=await callPrivateApi("/cart/clear","DELETE",undefined,token)
+        console.log("data cart clear", data);
+        
         if (data.success) {
           toast.success('Payment successful! Cart cleared.');
         } else {
