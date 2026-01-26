@@ -23,8 +23,8 @@ export default function ClientLayout({ children }) {
                 <CartProvider>
                   <WishlistProvider>
                     <ConditionalLayout>
+                      {/* <Toaster position="top-right" /> */}
                       {children}
-                      <Toaster position="top-right" />
                     </ConditionalLayout>
                   </WishlistProvider>
                 </CartProvider>
