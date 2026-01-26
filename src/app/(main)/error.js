@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useEffect } from 'react';
 import { FiAlertTriangle, FiHome } from 'react-icons/fi';
