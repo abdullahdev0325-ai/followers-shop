@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import AdminCategoryPage from '@/components/category/AdminCategoryPage';
 
 export const metadata = {

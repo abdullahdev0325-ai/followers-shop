@@ -1,5 +1,5 @@
-// const HOSTNAME = "https://ecommerce-apis-1-pv65.onrender.com/api";
-const HOSTNAME = "http://localhost:3000/api";
+const HOSTNAME = "http://followora-shop.netlify.app/api";
+// const HOSTNAME = "http://localhost:3000/api";
 
 /* ===============================
    CORE API CALLS

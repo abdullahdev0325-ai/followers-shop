@@ -1,4 +1,5 @@
 // import OccasionManager from '@/components/admin/OccasionManager';
+export const dynamic = 'force-dynamic';
 import AdminOccasionPage from '@/components/ocassion/AdminOcassionPage';
 
 export const metadata = {
