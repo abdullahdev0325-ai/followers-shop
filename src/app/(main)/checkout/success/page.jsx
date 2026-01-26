@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import OrderSuccess from '@/components/checkout/OrderSuccess';
 
 export const metadata = {

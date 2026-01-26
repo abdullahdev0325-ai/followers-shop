@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 
