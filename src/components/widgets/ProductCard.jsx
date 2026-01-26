@@ -5,50 +5,50 @@ import { FaStar } from 'react-icons/fa';
 
 import { useCart } from "@/hooks/CartContext";
 import { useWishlist } from "@/hooks/WishlistContext";
-  import toast from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product = {} }) {
-  const {token}=useCart()
+  const { token } = useCart()
   const { addToCart } = useCart();
-  const { toggleWishlist, isInWishlist,setIs } = useWishlist();
+  const { toggleWishlist, isInWishlist, setIs } = useWishlist();
   const isWishlisted = isInWishlist(product.id || product._id);
   // ✅ SAFE FALLBACKS (hard-coded)
 
 
-const handleWishlistClick = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  // ✅ User logged in
-  if (token) {
-    toggleWishlist(product);
-    return;
-  }
+    // ✅ User logged in
+    if (token) {
+      toggleWishlist(product);
+      return;
+    }
 
-  // ❌ Guest user → LocalStorage wishlist
-  const existingWishlist =
-    JSON.parse(localStorage.getItem("wishList")) || [];
+    // ❌ Guest user → LocalStorage wishlist
+    const existingWishlist =
+      JSON.parse(localStorage.getItem("wishList")) || [];
 
-  const alreadyExists = existingWishlist.some(
-    (item) => (item._id || item.id) === (product._id || product.id)
-  );
-
-  let updatedWishlist;
-
-  if (alreadyExists) {
-    // ➖ Remove
-    updatedWishlist = existingWishlist.filter(
-      (item) => (item._id || item.id) !== (product._id || product.id)
+    const alreadyExists = existingWishlist.some(
+      (item) => (item._id || item.id) === (product._id || product.id)
     );
-    localStorage.setItem("wishList", JSON.stringify(updatedWishlist));
-    toast.success("Removed from wishlist ❤️");
-  } else {
-    // ➕ Add
-    updatedWishlist = [...existingWishlist, product];
-    localStorage.setItem("wishList", JSON.stringify(updatedWishlist));
-    toast.success("Added to wishlist 🤍");
-  }
-};
+
+    let updatedWishlist;
+
+    if (alreadyExists) {
+      // ➖ Remove
+      updatedWishlist = existingWishlist.filter(
+        (item) => (item._id || item.id) !== (product._id || product.id)
+      );
+      localStorage.setItem("wishList", JSON.stringify(updatedWishlist));
+      toast.success("Removed from wishlist ❤️");
+    } else {
+      // ➕ Add
+      updatedWishlist = [...existingWishlist, product];
+      localStorage.setItem("wishList", JSON.stringify(updatedWishlist));
+      toast.success("Added to wishlist 🤍");
+    }
+  };
 
 
 
@@ -127,7 +127,7 @@ const handleWishlistClick = (e) => {
             transition-opacity duration-300
           "
         >
-         <button
+          <button
             aria-label="Preview"
             className="p-1.5 sm:p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
           >
@@ -149,7 +149,7 @@ const handleWishlistClick = (e) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              addToCart(product._id, 1);
+              addToCart(product, 1);
             }}
             className="p-1.5 sm:p-2 rounded-full text-white bg-pink-400 hover:bg-pink-500 transition-colors duration-300 group"
           >

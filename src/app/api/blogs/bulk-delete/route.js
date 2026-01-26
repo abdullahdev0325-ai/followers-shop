@@ -5,6 +5,8 @@ import { deleteImage, extractPublicId } from "@/lib/cloudinary";
 
 export async function POST(req) {
   await connectDB();
+  const { error } = verifyAdmin(request);
+          if (error) return error;
   const { ids } = await req.json();
 
   if (!Array.isArray(ids) || ids.length === 0) {

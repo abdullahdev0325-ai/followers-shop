@@ -1,26 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { useSelector, useDispatch } from 'react-redux';
 import { FiLogOut, FiUser, FiHome, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from './ThemeProvider';
 import { RiMenuUnfold4Line } from "react-icons/ri";
 import { LuMenu } from "react-icons/lu";
 
-import { logout } from '@/lib/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/authContext';
 
 export default function AdminNavbar() {
-    const { isSidebarOpen, toggleSidebar } = useAuth();
+  const { isSidebarOpen, toggleSidebar, user, logout } = useAuth();
 
   const { theme, toggleTheme } = useTheme();
-  const dispatch = useDispatch();
   const router = useRouter();
-  const { user } = useSelector((state) => state.auth);
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await logout();
     router.push('/');
   };
 
@@ -34,12 +30,12 @@ export default function AdminNavbar() {
               Admin Panel
             </Link>
             <button
-            button="true"
-            onClick={toggleSidebar}
-            className="p-2 text-xl mx-4 bg-gray-200 rounded-full transition-all ease-in-out duration-300 text-black hover:text-white hover:bg-pink-600"
-          >
-            {isSidebarOpen ? <RiMenuUnfold4Line /> : <LuMenu />}
-          </button>
+              button="true"
+              onClick={toggleSidebar}
+              className="p-2 text-xl mx-4 bg-gray-200 rounded-full transition-all ease-in-out duration-300 text-black hover:text-white hover:bg-pink-600"
+            >
+              {isSidebarOpen ? <RiMenuUnfold4Line /> : <LuMenu />}
+            </button>
           </div>
 
           {/* Right Side Actions */}
@@ -60,7 +56,7 @@ export default function AdminNavbar() {
             </button>
             <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
               <FiUser size={18} />
-              <span className="hidden sm:inline">{user?.firstName || user?.email || 'Admin'}</span>
+              <span className="hidden sm:inline">{user?.name || user?.email || 'Admin'}</span>
             </div>
             <button
               onClick={handleLogout}

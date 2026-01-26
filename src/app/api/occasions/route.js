@@ -10,7 +10,8 @@ import { uploadImage } from "@/components/cloudinary/ImageUploader";
 export async function POST(request) {
   try {
     await connectDB();
-
+const { error } = verifyAdmin(request);
+        if (error) return error;
     const formData = await request.formData();
     const name = formData.get("name");
     const slug = formData.get("slug");

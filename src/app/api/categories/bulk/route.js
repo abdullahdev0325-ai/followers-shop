@@ -14,7 +14,8 @@ import Category from "@/models/Category";
 export async function POST(request) {
   try {
     await connectDB();
-
+   const { error } = verifyAdmin(request);
+           if (error) return error;
     const body = await request.json();
     const categories = Array.isArray(body.categories) ? body.categories : [];
  console.log("categories",categories);

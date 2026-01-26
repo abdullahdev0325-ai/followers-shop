@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function CheckoutSuccessPage() {
-  const { token } = useAuth();
+  const { token, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -14,6 +14,8 @@ export default function CheckoutSuccessPage() {
   const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!token) {
       toast.error('Please login first');
       router.push('/auth/login');

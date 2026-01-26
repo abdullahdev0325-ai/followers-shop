@@ -65,6 +65,8 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     await connectDB();
+    const { error } = verifyAdmin(request);
+            if (error) return error;
     const { name, slug, is_active = true } = await request.json();
 
     if (!name) {

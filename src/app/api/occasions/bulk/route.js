@@ -5,7 +5,8 @@ import Occasion from "@/models/Occasion";
 export async function POST(req) {
   try {
     await connectDB();
-
+const { error } = verifyAdmin(request);
+        if (error) return error;
     const body = await req.json();
     const occasions = Array.isArray(body.occasions) ? body.occasions : [];
 

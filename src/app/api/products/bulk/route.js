@@ -21,6 +21,8 @@ export function generateSlug(name) {
 export async function POST(request) {
   try {
     await connectDB();
+    const { error } = verifyAdmin(request);
+            if (error) return error;
     const body = await request.json();
     const products = Array.isArray(body.products) ? body.products : [];
 

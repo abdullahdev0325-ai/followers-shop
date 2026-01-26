@@ -10,7 +10,7 @@ export default function ProductDetails({ product }) {
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(product.id, 1);
+      await addToCart(product, 1);
       toast.success("Added to cart");
     } catch (err) {
       toast.error("Failed to add to cart");

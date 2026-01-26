@@ -1,73 +1,169 @@
-import { NextResponse } from 'next/server';
-import {connectDB} from '@/lib/connectDB';
-import CartItem from '@/models/CartItem';
-import Product from '@/models/Product';
-import { requireAuth } from '@/lib/middleware/auth';
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/connectDB";
+import CartItem from "@/models/CartItem";
+import Product from "@/models/Product";
+import { requireAuth } from "@/lib/middleware/auth";
 
 export async function POST(request) {
   try {
     await connectDB();
 
+    // ✅ Auth user
     const user = await requireAuth(request);
 
-    // Check if Stripe is configured
+    // ✅ Stripe key check
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeSecretKey) {
-      console.error('Stripe not configured: STRIPE_SECRET_KEY missing');
-      return NextResponse.json({ success: false, message: 'Payment service not configured' }, { status: 500 });
+      return NextResponse.json(
+        { success: false, message: "Stripe not configured" },
+        { status: 500 }
+      );
     }
 
-    // Import Stripe dynamically
-    const stripe = (await import('stripe')).default(stripeSecretKey);
+    // ✅ Stripe init
+    const stripe = (await import("stripe")).default(stripeSecretKey);
 
-    // Check base URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!baseUrl) {
-      console.error('Base URL not configured: NEXT_PUBLIC_BASE_URL missing');
-      return NextResponse.json({ success: false, message: 'Application URL not configured' }, { status: 500 });
-    }
+    // ✅ Base URL
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+    // ✅ Get frontend payload
     const body = await request.json();
-    const { billingAddress, shippingAddress } = body;
 
-    // Get cart items for user
-    const cartItems = await CartItem.find({ user_id: user.id }).populate('product_id').lean();
-    if (!cartItems.length) {
-      return NextResponse.json({ success: false, message: 'Cart is empty' }, { status: 400 });
+    const {
+      billing,
+      shipping,
+      contactNumber,
+    } = body;
+
+    // ❌ Validation
+    if (!billing || !shipping || !contactNumber) {
+      return NextResponse.json(
+        { success: false, message: "Missing checkout data" },
+        { status: 400 }
+      );
     }
 
-    // Calculate total for Dubai (AED)
+    // ✅ Fetch cart from DB
+    const cartItems = await CartItem.find({
+      user_id: user.id,
+    })
+      .populate("product_id")
+      .lean();
+
+    if (!cartItems.length) {
+      return NextResponse.json(
+        { success: false, message: "Cart is empty" },
+        { status: 400 }
+      );
+    }
+
+    // ===============================
+    // 🧮 PRICE CALCULATIONS
+    // ===============================
+
+    let subtotal = 0;
+
     const line_items = cartItems.map((item) => {
       const product = item.product_id;
+
+      const price = Number(product.price);
+      const quantity = Number(item.quantity);
+
+      subtotal += price * quantity;
+
       return {
         price_data: {
-          currency: 'aed',
+          currency: "aed",
           product_data: {
             name: product.name,
-            images: [product.image || '/images/fallback.jpg'],
+            images: [
+              product.image?.startsWith("http")
+                ? product.image
+                : `${baseUrl}${product.image || "/images/fallback.jpg"}`,
+            ],
           },
-          unit_amount: Math.round(product.price * 100), // AED to fils
+          unit_amount: Math.round(price * 100), // AED → fils
         },
-        quantity: item.quantity,
+        quantity,
       };
     });
 
+    // ✅ Shipping + VAT
+    const shippingCost = subtotal > 100 ? 0 : 20;
+    const taxCost = subtotal * 0.05;
+
+    if (shippingCost > 0) {
+      line_items.push({
+        price_data: {
+          currency: "aed",
+          product_data: { name: "Shipping Cost" },
+          unit_amount: Math.round(shippingCost * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    if (taxCost > 0) {
+      line_items.push({
+        price_data: {
+          currency: "aed",
+          product_data: { name: "VAT (5%)" },
+          unit_amount: Math.round(taxCost * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    // ===============================
+    // 💳 STRIPE SESSION
+    // ===============================
+
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
+      mode: "payment",
+      payment_method_types: ["card"],
+
       line_items,
-      billing_address_collection: 'required',
+
+      billing_address_collection: "required",
+
       shipping_address_collection: {
-        allowed_countries: ['AE'],
+        allowed_countries: ["AE"],
       },
+
+      metadata: {
+        userId: user.id,
+        email: user.email,
+        contactNumber,
+
+        billing: JSON.stringify(billing),
+        shipping: JSON.stringify(shipping),
+
+        subtotal: subtotal.toFixed(2),
+        tax: taxCost.toFixed(2),
+        shippingCost: shippingCost.toFixed(2),
+      },
+
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout/cancel`,
     });
 
-    return NextResponse.json({ success: true, url: session.url });
-  } catch (err) {
-    console.error('Stripe Checkout Error:', err);
+    return NextResponse.json({
+      success: true,
+      url: session.url,
+    });
+  } catch (error) {
+    console.error("Stripe Checkout Error:", error);
+
     return NextResponse.json(
-      { success: false, message: 'Checkout failed', error: process.env.NODE_ENV === 'development' ? err.message : undefined },
+      {
+        success: false,
+        message: "Checkout failed",
+        error:
+          process.env.NODE_ENV === "development"
+            ? error.message
+            : undefined,
+      },
       { status: 500 }
     );
   }

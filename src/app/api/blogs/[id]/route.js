@@ -29,7 +29,8 @@ export async function PUT(req, { params }) {
   console.log("PUT id:", id);
 
   await connectDB();
-
+const { error } = verifyAdmin(request);
+        if (error) return error;
   try {
     const formData = await req.formData();
 

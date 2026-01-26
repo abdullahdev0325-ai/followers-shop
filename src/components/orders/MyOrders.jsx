@@ -1,24 +1,46 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiPackage, FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
-import { fetchUserOrders } from '@/lib/slices/ordersSlice';
+import { useAuth } from '@/hooks/authContext';
+import { callPrivateApi } from '@/services/callApis';
 
 export default function MyOrders() {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { orders, loading, error } = useSelector((state) => state.orders);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user, token, isAuthenticated } = useAuth();
+
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchUserOrders());
-    } else {
-      router.push('/');
+    if (!isAuthenticated && !loading) { // Wait for auth check
+      // router.push('/'); // AuthContext handles redirect usually?
     }
-  }, [dispatch, isAuthenticated, router]);
+
+    const fetchOrders = async () => {
+      if (!token) return;
+      try {
+        setLoading(true);
+        const res = await callPrivateApi('/orders/my-order', 'GET', null, token);
+        if (res.success) {
+          setOrders(res.data || []);
+        }
+      } catch (err) {
+        console.error(err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchOrders();
+    } else {
+      setLoading(false);
+    }
+  }, [token, isAuthenticated, router]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -91,7 +113,7 @@ export default function MyOrders() {
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Orders</h1>
 
       <div className="space-y-4">
-        {orders.map((order,i) => {
+        {orders.map((order, i) => {
           const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
           const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 

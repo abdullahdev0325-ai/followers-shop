@@ -26,7 +26,6 @@ export default function Signup() {
 
   const [formData, setFormData] = useState({
     name: '',
-    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -53,7 +52,6 @@ export default function Signup() {
 
     const success = await signup({
       name: formData.name,
-      lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
     });
@@ -94,7 +92,7 @@ export default function Signup() {
               <input
                 type="text"
                 name="name"
-                placeholder="First Name"
+                placeholder="Full Name"
                 value={formData.name}
                 onChange={handleChange}
                 required

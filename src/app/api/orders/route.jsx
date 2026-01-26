@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import {connectDB} from '@/lib/connectDB';
+import { connectDB } from '@/lib/connectDB';
 import Order from '@/models/Order';
 import { requireAuth } from '@/lib/middleware/auth';
 
@@ -17,12 +17,31 @@ export async function GET(request) {
     const startDate = searchParams.get('startDate'); // YYYY-MM-DD
     const endDate = searchParams.get('endDate');     // YYYY-MM-DD
     const status = searchParams.get('status');       // pending, paid, failed
+    const search = searchParams.get('search');       // search term
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
     const skip = (page - 1) * limit;
 
     const query = {};
-    if (status) query.status = status;
+    if (status) query.order_status = status; // Changed from 'status' to 'order_status' based on model
+
+    if (search) {
+      const searchRegex = { $regex: search, $options: 'i' };
+      const orConditions = [
+        { 'billing_address.full_name': searchRegex },
+        { 'billing_address.email': searchRegex },
+        { 'shipping_address.full_name': searchRegex },
+        { 'user_id': searchRegex } // Attempt to search by user ID strings if applicable
+      ];
+
+      // If search looks like an ObjectId, add it to query
+      if (search.match(/^[0-9a-fA-F]{24}$/)) {
+        orConditions.push({ _id: search });
+      }
+
+      query.$or = orConditions;
+    }
+
     if (startDate || endDate) {
       query.createdAt = {};
       if (startDate) query.createdAt.$gte = new Date(`${startDate}T00:00:00.000Z`);

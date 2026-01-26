@@ -1,27 +1,28 @@
 'use client';
 
-import { useSelector } from 'react-redux';
+import { useCart } from '@/hooks/CartContext';
 import Image from 'next/image';
 import { FiPackage } from 'react-icons/fi';
 
 export default function OrderSummary() {
-  const { items, total, subtotal, shipping, tax } = useSelector((state) => state.cart);
+  const { cartItems } = useCart();
 
+  // Calculate totals locally since context might not provide all breakdown
   const calculateSubtotal = () => {
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
   };
 
   const calculateShipping = () => {
-    return total > 100 ? 0 : 20; // Free shipping over 100 AED
+    return calculateSubtotal() > 100 ? 0 : 20; // Example logic match
   };
 
   const calculateTax = () => {
-    return calculateSubtotal() * 0.05; // 5% VAT
+    return calculateSubtotal() * 0.05;
   };
 
-  const finalSubtotal = subtotal || calculateSubtotal();
-  const finalShipping = shipping !== undefined ? shipping : calculateShipping();
-  const finalTax = tax !== undefined ? tax : calculateTax();
+  const finalSubtotal = calculateSubtotal();
+  const finalShipping = calculateShipping();
+  const finalTax = calculateTax();
   const finalTotal = finalSubtotal + finalShipping + finalTax;
 
   return (
@@ -33,7 +34,7 @@ export default function OrderSummary() {
 
       {/* Items List */}
       <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-        {items.map((item) => (
+        {cartItems.map((item) => (
           <div key={item.id} className="flex gap-4">
             <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-lg flex-shrink-0 relative overflow-hidden">
               {item.image && (

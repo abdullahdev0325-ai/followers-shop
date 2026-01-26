@@ -32,6 +32,8 @@ export function WishlistProvider({ children }) {
     // ✅ Logged in user
     try {
       const res = await callPrivateApi("/wishlist", "GET", null, token);
+      console.log("res wish list",res);
+      
       if (res.success) setWishlistItems(res.data.items || []);
     } catch (err) {
       console.error(err);

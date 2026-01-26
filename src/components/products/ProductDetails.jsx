@@ -9,16 +9,14 @@ import {
   FiArrowLeft,
 } from 'react-icons/fi';
 import { normalizeImagePath } from '@/lib/utils/normalizeImagePath';
-import { addToCart } from '@/lib/slices/cartSlice';
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from '@/lib/slices/wishlistSlice';
+import { useCart } from '@/hooks/CartContext';
+import { useWishlist } from '@/hooks/WishlistContext';
 
 export default function ProductDetails() {
-  const dispatch = useDispatch();
   const params = useParams();
   const productSlug = params?.productSlug || '';
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist: checkWishlist } = useWishlist();
 
   /** 🔹 Product from Redux */
   const product = useSelector((state) =>
@@ -27,15 +25,11 @@ export default function ProductDetails() {
     )
   );
 
-  const wishlist = useSelector(
-    (state) => state.wishlist.items
-  );
-  const isInWishlist = wishlist.some(
-    (item) => item.id === product?.id
-  );
+  const isWishlisted = product ? checkWishlist(product.id || product._id) : false;
 
   /** ❌ Product not found */
   if (!product) {
+    // ... existing not found checks ...
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900">
         <div className="text-center">
@@ -58,26 +52,12 @@ export default function ProductDetails() {
 
   /** 🛒 Add to cart */
   const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        productId: product.id,
-        quantity: 1,
-        product,
-      })
-    );
+    addToCart(product, 1);
   };
 
   /** ❤️ Wishlist toggle */
   const handleWishlist = () => {
-    if (isInWishlist) {
-      dispatch(
-        removeFromWishlist({
-          productId: product.id,
-        })
-      );
-    } else {
-      dispatch(addToWishlist(product));
-    }
+    toggleWishlist(product);
   };
 
   return (
@@ -190,11 +170,10 @@ export default function ProductDetails() {
 
                 <button
                   onClick={handleWishlist}
-                  className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${
-                    isInWishlist
+                  className={`px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 ${isInWishlist
                       ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400'
                       : 'bg-gray-200 dark:bg-zinc-700 text-gray-800 dark:text-white'
-                  }`}
+                    }`}
                 >
                   <FiHeart className={isInWishlist ? 'fill-current' : ''} />
                   {isInWishlist ? 'Wishlisted' : 'Wishlist'}

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-import { callPublicApi,callPrivateApi } from '@/services/callApis';
+import { callPublicApi, callPrivateApi } from '@/services/callApis';
 // 👆 yahan tumhara axios wrapper
 
 const AuthContext = createContext();
@@ -42,8 +42,17 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       const res = await callPublicApi('/auth/signup', 'POST', userData);
-
-      toast.success('Account created successfully');
+  console.log("res in register",res);
+  
+      if (res.data?.token && res.data?.user) {
+        const { token, user } = res.data;
+        localStorage.setItem('token', token);
+        setToken(token);
+        setUser(user);
+        toast.success('Account created and logged in!');
+      } else {
+        toast.success('Account created successfully');
+      }
 
       return true;
     } catch (err) {
@@ -58,13 +67,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const res = await callPublicApi('/auth/login', 'POST', credentials);
-      console.log("res",res);
-      
+      console.log("res", res);
+
       const { token, user } = res;
 
       // console.log("token saved",token,user);
       localStorage.setItem('token', token);
-       
+
       setToken(token);
       setUser(user);
       //  console.log("token user");
@@ -89,6 +98,7 @@ export const AuthProvider = ({ children }) => {
         undefined,
         tokenParam
       );
+      console.log("res me", res);
 
       setUser(res.data.user);
     } catch (err) {
@@ -123,6 +133,7 @@ export const AuthProvider = ({ children }) => {
         user,
         token,
         loading,
+        isAuthenticated: !!user,
 
         signup,
         login,

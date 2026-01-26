@@ -1,126 +1,320 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/authContext';
+import { useCart } from '@/hooks/CartContext';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { LoginHeading } from '../ui/Heading';
+import { callPrivateApi } from '@/services/callApis';
 
 export default function CheckoutPage() {
-  const { token } = useAuth();
   const router = useRouter();
-  const [cartItems, setCartItems] = useState([]);
-  const [billingAddress, setBillingAddress] = useState('');
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { token, user, isAuthenticated, loading: authLoading } = useAuth();
+  const { cartItems, loading: cartLoading } = useCart();
+  console.log("user", user);
 
+  const [billing, setBilling] = useState({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'UAE',
+  });
+
+  const [shipping, setShipping] = useState({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'UAE',
+  });
+
+  const [contactNumber, setContactNumber] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Redirect if user not logged in
   useEffect(() => {
-    if (!token) {
-      toast.error('Please login first');
+    if (!authLoading && !isAuthenticated) {
+      toast.error('Please login to access checkout');
       router.push('/auth/login');
-      return;
     }
-    fetchCartItems();
+  }, [authLoading, isAuthenticated, router]);
+
+  // Pre-fill user info
+  useEffect(() => {
+    if (user) {
+      setContactNumber(user.phone || '');
+      setBilling(prev => ({
+        ...prev,
+        street: user.address?.street || '',
+        city: user.address?.city || '',
+        state: user.address?.state || '',
+        postalCode: user.address?.postalCode || '',
+      }));
+      setShipping(prev => ({
+        ...prev,
+        street: user.address?.street || '',
+        city: user.address?.city || '',
+        state: user.address?.state || '',
+        postalCode: user.address?.postalCode || '',
+      }));
+    }
+  }, [user]);
+
+  // Debugging API calls
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const publicRes = await fetch('/api/public-data');
+        const publicData = await publicRes.json();
+        console.log('Public API response:', publicData);
+
+        if (token) {
+          const privateRes = await fetch('/api/user-details', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const privateData = await privateRes.json();
+          console.log('Private API response:', privateData);
+        }
+      } catch (err) {
+        console.error('API fetch error:', err);
+      }
+    }
+    fetchData();
   }, [token]);
 
-  const fetchCartItems = async () => {
-    try {
-      const res = await fetch('/api/cart', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.success) setCartItems(data.data.items);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to fetch cart items');
-    }
+  const calculateSubtotal = () => {
+    return cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
   };
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const calculateShipping = () => {
+    return calculateSubtotal() > 100 ? 0 : 20;
+  };
+
+  const calculateTax = () => {
+    return calculateSubtotal() * 0.05;
+  };
+
+  const calculateTotal = () => {
+    return calculateSubtotal() + calculateShipping() + calculateTax();
+  };
+
+  const total = calculateTotal();
 
   const handleCheckout = async () => {
-    if (!billingAddress || !shippingAddress) {
-      toast.error('Please fill billing and shipping addresses');
+    if (
+      !billing.street ||
+      !billing.city ||
+      !billing.state ||
+      !billing.postalCode ||
+      !shipping.street ||
+      !shipping.city ||
+      !shipping.state ||
+      !shipping.postalCode ||
+      !contactNumber
+    ) {
+      toast.error('Please fill all required fields');
       return;
     }
 
-    setLoading(true);
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    // Fix: Define cleanCartItems
+    const cleanCartItems = cartItems.map(item => ({
+      product: item._id, // Assuming item has _id or product_id
+      quantity: item.quantity,
+      price: item.price
+    }));
+
+    const payload = {
+      userEmail: user?.email || "",
+      contactNumber: String(contactNumber),
+
+      billing: {
+        street: billing.street,
+        city: billing.city,
+        state: billing.state,
+        postalCode: billing.postalCode,
+        country: billing.country,
+      },
+
+      shipping: {
+        street: shipping.street,
+        city: shipping.city,
+        state: shipping.state,
+        postalCode: shipping.postalCode,
+        country: shipping.country,
+      },
+
+      cartItems: cleanCartItems,
+      totalAmount: Number(total.toFixed(2)),
+    };
+
+
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ billingAddress, shippingAddress }),
-      });
-      const data = await res.json();
+      const data = await callPrivateApi("/checkout", "POST", payload, token)
+
+
+
+      console.log('Checkout API response:', data);
+
       if (data.success) {
         toast.success('Redirecting to payment...');
         window.location.href = data.url;
       } else {
-        toast.error(data.message);
+        toast.error(data.message || 'Checkout failed');
       }
     } catch (err) {
-      console.error(err);
+      console.error('Checkout error:', err);
       toast.error('Checkout failed');
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
+  if (authLoading || cartLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto p-5">
+    <div className=" mx-auto p-5">
       <LoginHeading text="Checkout" />
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Cart Items */}
-        <div className="bg-white p-5 rounded-lg shadow">
-          <h2 className="font-semibold text-lg mb-4">Your Cart</h2>
-          {cartItems.map((item) => (
-            <div key={item.id} className="flex justify-between mb-3 border-b pb-2">
-              <div className="flex items-center gap-3">
-                <img src={item.image} className="w-16 h-16 object-cover rounded" />
-                <div>
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-gray-500">Qty: {item.quantity}</p>
-                </div>
-              </div>
-              <div className="font-semibold">AED {(item.price * item.quantity).toFixed(2)}</div>
-            </div>
-          ))}
-          <div className="flex justify-between font-bold mt-3">Total: AED {total.toFixed(2)}</div>
-        </div>
 
-        {/* Address Form */}
-        <div className="bg-white p-5 rounded-lg shadow space-y-4">
+      <div className="bg-white p-5 rounded-lg shadow space-y-4 mt-6">
+        {/* User Info */}
+        <div className='grid  grid-cols-1 gap-4 md:grid-cols-2'>
           <div>
-            <label className="block font-semibold mb-1">Billing Address</label>
-            <textarea
-              className="w-full border p-2 rounded"
-              value={billingAddress}
-              onChange={(e) => setBillingAddress(e.target.value)}
-              placeholder="Enter your billing address"
+            <label className="block font-semibold mb-1">Name</label>
+            <input
+              type="text"
+              value={user?.name}
+              disabled
+              className="w-full border p-2 rounded bg-gray-100 cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label className="block font-semibold mb-1">Shipping Address</label>
-            <textarea
-              className="w-full border p-2 rounded"
-              value={shippingAddress}
-              onChange={(e) => setShippingAddress(e.target.value)}
-              placeholder="Enter your shipping address"
+            <label className="block font-semibold mb-1">Email</label>
+            <input
+              type="email"
+              value={user?.email || ''}
+              disabled
+              className="w-full border p-2 rounded bg-gray-100 cursor-not-allowed"
             />
           </div>
 
-          <button
-            onClick={handleCheckout}
-            disabled={loading}
-            className="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-lg font-semibold transition-all"
-          >
-            {loading ? 'Processing...' : 'Pay with Card'}
-          </button>
+          <div>
+            <label className="block font-semibold mb-1">Contact Number</label>
+            <input
+              type="text"
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+              placeholder="Enter your contact number"
+              className="w-full border p-2 rounded"
+            />
+          </div>
         </div>
+        {/* Billing Address */}
+        <h3 className="font-semibold mt-4">Billing Address (Dubai)</h3>
+        <div className='grid  grid-cols-1 gap-4 md:grid-cols-2'>
+
+          <input
+            type="text"
+            placeholder="Street"
+            value={billing.street}
+            onChange={(e) => setBilling({ ...billing, street: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="City"
+            value={billing.city}
+            onChange={(e) => setBilling({ ...billing, city: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="State"
+            value={billing.state}
+            onChange={(e) => setBilling({ ...billing, state: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Postal Code"
+            value={billing.postalCode}
+            onChange={(e) =>
+              setBilling({ ...billing, postalCode: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Country"
+            value={billing.country}
+            disabled
+            className="w-full border p-2 rounded bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Shipping Address */}
+        <h3 className="font-semibold mt-4">Shipping Address (Dubai)</h3>
+        <div className='grid  grid-cols-1 gap-4 md:grid-cols-2'>
+          <input
+            type="text"
+            placeholder="Street"
+            value={shipping.street}
+            onChange={(e) => setShipping({ ...shipping, street: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="City"
+            value={shipping.city}
+            onChange={(e) => setShipping({ ...shipping, city: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="State"
+            value={shipping.state}
+            onChange={(e) => setShipping({ ...shipping, state: e.target.value })}
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Postal Code"
+            value={shipping.postalCode}
+            onChange={(e) =>
+              setShipping({ ...shipping, postalCode: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Country"
+            value={shipping.country}
+            disabled
+            className="w-full border p-2 rounded bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+        <button
+          onClick={handleCheckout}
+          disabled={isProcessing}
+          className="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-lg font-semibold transition-all mt-2"
+        >
+          {isProcessing ? 'Processing...' : `Pay $${total.toFixed(2)}`}
+        </button>
       </div>
     </div>
   );

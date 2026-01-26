@@ -6,14 +6,14 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { useAuth } from '@/hooks/authContext';
 import { logAdminAccess } from '@/lib/routeLogger';
 
 export default function AdminRouteGuard({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     console.log('\n═══════════════════════════════════════════════════════════');
@@ -22,10 +22,10 @@ export default function AdminRouteGuard({ children }) {
     console.log(`🔐 Authenticated: ${isAuthenticated}`);
     console.log(`👤 User: ${user?.email || 'No user'}`);
     console.log(`🎯 Role: ${user?.role?.toUpperCase() || 'NO ROLE'}`);
-    
+
     if (isAuthenticated && user) {
       logAdminAccess(user.role);
-      
+
       if (user.role !== 'admin') {
         console.log('\n═══════════════════════════════════════════════════════════');
         console.log('🚫 [ADMIN GUARD] ACCESS DENIED - Not an admin user!');

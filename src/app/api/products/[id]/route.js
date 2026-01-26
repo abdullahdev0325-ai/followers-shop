@@ -13,6 +13,8 @@ import { logRequest, logResponse } from '@/lib/apiLogger';
 export async function PUT(request, { params }) {
   try {
     await connectDB();
+    const { error } = verifyAdmin(request);
+            if (error) return error;
     const { id } =await params;
 console.log("id",id);
 

@@ -34,7 +34,7 @@ export function getTokenFromRequest(request) {
 export async function authenticateRequest(request) {
   try {
     const token = getTokenFromRequest(request);
-    
+
     if (!token) {
       return null;
     }
@@ -48,7 +48,7 @@ export async function authenticateRequest(request) {
     await connectDB();
 
     // Verify user exists and is active
-    const user = await User.findById(decoded.userId).select('_id email first_name last_name role is_active');
+    const user = await User.findById(decoded.userId).select('_id email name role is_active');
 
     if (!user || !user.is_active) {
       return null;
@@ -57,8 +57,7 @@ export async function authenticateRequest(request) {
     return {
       id: user._id.toString(),
       email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
+      name: user.name,
       role: user.role,
     };
   } catch (error) {

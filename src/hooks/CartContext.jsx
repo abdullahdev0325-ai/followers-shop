@@ -39,6 +39,8 @@ export function CartProvider({ children }) {
         ...item,
         cartItemId: item.productId || item._id || item.id,
       }));
+      console.log("items", items);
+
       setCartItems(items);
       return;
     }
@@ -47,7 +49,22 @@ export function CartProvider({ children }) {
     setLoading(true);
     try {
       const res = await callPrivateApi("/cart", "GET", null, token);
-      if (res.success) setCartItems(res.data.items || []);
+      console.log("res innvcst", res);
+
+      if (res.success) {
+        // Normalize API data to match local cart structure
+        const normalizedItems = (res.data.items || []).map((item) => ({
+          ...item,
+          cartItemId: item._id || item.id, // Cart Item ID
+          productId: item.product?._id || item.product?.id,
+          name: item.product?.title || item.product?.name || item.name,
+          image: item.product?.image || item.product?.image_url || item.image,
+          price: item.product?.price || item.price,
+          quantity: item.quantity,
+          product: item.product // Keep full product just in case
+        }));
+        setCartItems(normalizedItems);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -103,7 +120,9 @@ export function CartProvider({ children }) {
         "POST",
         { productId, quantity },
         token
-      );
+      );   
+      console.log("add cart",res);
+      
 
       if (res.success) {
         toast.success(res.message || "Added to cart");
@@ -150,7 +169,8 @@ export function CartProvider({ children }) {
         { cartItemId, action },
         token
       );
-
+ console.log("update cart itewem",res);
+ 
       if (res.success) fetchCart();
     } catch (err) {
       console.error(err);
@@ -180,7 +200,8 @@ export function CartProvider({ children }) {
         { cartItemId, action: "delete" },
         token
       );
-
+ console.log("remocve caet",res);
+ 
       if (res.success) fetchCart();
     } catch (err) {
       console.error(err);

@@ -2,20 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSelector, useDispatch } from 'react-redux';
-import { logoutAsync } from '@/lib/slices/authSlice';
+import { useAuth } from '@/hooks/authContext';
 import { FiLogOut, FiUser, FiMail, FiPhone } from 'react-icons/fi';
 import Link from 'next/link';
 
 export default function AccountPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
+  const { user, loading, logout, isAuthenticated } = useAuth();
 
   const [localUser, setLocalUser] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
+    // Only use local storage user if context user is not available yet
+    // or as a fallback
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -31,14 +31,8 @@ export default function AccountPage() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const result = await dispatch(logoutAsync());
-
-      if (result.payload?.success) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setLocalUser(null);
-        router.push('/');
-      }
+      await logout();
+      // AuthContext handles redirect
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -70,7 +64,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white dark:bg-zinc-800 rounded-2xl shadow-lg overflow-hidden">
-        
+
         {/* Header */}
         <div className="bg-gradient-to-r from-pink-500 to-purple-600 p-6 flex items-center gap-4">
           <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center font-bold text-xl text-pink-600">

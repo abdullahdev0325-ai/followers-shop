@@ -42,12 +42,12 @@ export async function POST(request) {
     // 🔐 Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // 🔢 Generate OTP
+    // 🔢 Generate OTP    // 🔢 Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpHash = await bcrypt.hash(otp, 10);
     const otpExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
-    // 👤 Create user
+
     const user = await User.create({
       name,
       email: email.toLowerCase(),

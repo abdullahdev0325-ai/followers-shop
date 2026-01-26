@@ -16,7 +16,8 @@ export async function GET() {
 
 export async function POST(req) {
   await connectDB();
-
+const { error } = verifyAdmin(request);
+        if (error) return error;
   const formData = await req.formData();
 
   const title = formData.get("title");
