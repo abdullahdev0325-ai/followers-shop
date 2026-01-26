@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiLock, FiLoader, FiRefreshCw } from 'react-icons/fi';
 import { callPublicApi } from '@/services/callApis';
-import { LoginHeading } from '../ui/Heading';
+import { LoginHeading } from '../ui/LoginHeading';
 
 export default function OTP() {
   const router = useRouter();

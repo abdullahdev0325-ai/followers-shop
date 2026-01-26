@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fi';
 import Link from 'next/link';
 
-import { LoginHeading } from '../ui/Heading';
+import { LoginHeading } from '../ui/LoginHeading';
 import { useAuth } from '@/hooks/authContext';
 
 export default function Login() {
@@ -42,9 +42,9 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const success = await login({email:formData.email,password:formData.password});
- console.log("sucess",success);
- 
+    const success = await login({ email: formData.email, password: formData.password });
+    console.log("sucess", success);
+
     if (success) {
       router.push('/');
     }

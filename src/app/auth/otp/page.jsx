@@ -22,6 +22,7 @@ export const metadata = {
     type: "website",
   },
 };
+export const dynamic = 'force-dynamic';
 
 const page = () => {
   return <OTP />;

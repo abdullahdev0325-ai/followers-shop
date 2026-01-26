@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 
 import { useAuth } from '@/hooks/authContext';
-import { LoginHeading } from '../ui/Heading';
+import { LoginHeading } from '../ui/LoginHeading';
 
 export default function Signup() {
   const router = useRouter();
