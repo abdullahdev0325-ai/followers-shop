@@ -8,14 +8,12 @@ import { WishlistProvider } from "@/hooks/WishlistContext";
 import { AuthProvider } from "@/hooks/authContext";
 import ProgressBarProviders from "@/components/ui/ProgressBar";
 import { ProductProvider } from "@/hooks/ProductContext";
-import ThemeProvider from "@/components/layout/ThemeProvider";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { CategoriesProvider } from "@/hooks/CategoriesContext";
 
 export default function ClientLayout({ children }) {
   return (
     <ReduxProvider>
-      <ThemeProvider>
         <ProgressBarProviders>
           <AuthProvider>
             <CategoriesProvider>
@@ -32,7 +30,6 @@ export default function ClientLayout({ children }) {
             </CategoriesProvider>
           </AuthProvider>
         </ProgressBarProviders>
-      </ThemeProvider>
     </ReduxProvider>
   );
 }
