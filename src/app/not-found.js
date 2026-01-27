@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FiHome, FiArrowLeft, FiSearch } from 'react-icons/fi';
+export const dynamic = 'force-dynamic';
 
 export default function NotFound() {
   return (
