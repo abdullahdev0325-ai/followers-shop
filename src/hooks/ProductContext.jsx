@@ -7,6 +7,8 @@ export const useProduct = () => useContext(ProductContext);
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [facets, setFacets] = useState({
     categories: {},
@@ -65,7 +67,13 @@ export const ProductProvider = ({ children }) => {
     <ProductContext.Provider
       value={{
         products,
+        setProducts,
+        filteredProducts,
+        setFilteredProducts,
+        currentPage,
+        setCurrentPage,
         loading,
+        setLoading,
         filters,
         setFilters,
         facets,

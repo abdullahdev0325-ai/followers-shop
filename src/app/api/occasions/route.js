@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/connectDB";
 import Occasion from "@/models/Occasion";
 import { validateEntityData, generateSlug } from "@/lib/generateSlug";
 import { uploadImage } from "@/components/cloudinary/ImageUploader";
+import { verifyAdmin } from '@/lib/auth';
 
 /* =========================
    CREATE OCCASION

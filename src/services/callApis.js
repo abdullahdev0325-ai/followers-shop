@@ -1,5 +1,5 @@
-const HOSTNAME = "http://followora-shop.netlify.app/api";
-// const HOSTNAME = "http://localhost:3000/api";
+const HOSTNAME = "http://localhost:3000/api";
+// const HOSTNAME = "http://followora-shop.netlify.app/api";
 
 /* ===============================
    CORE API CALLS

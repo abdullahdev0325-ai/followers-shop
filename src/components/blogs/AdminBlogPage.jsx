@@ -143,7 +143,11 @@ export default function AdminBlogPage() {
 
           <tbody>
             {loading ? (
-              <DashboardLoading />
+              <tr>
+                <td colSpan="8">
+                  <DashboardLoading />
+                </td>
+              </tr>
             ) : blogs.length === 0 ? (
               <tr>
                 <td colSpan="8" className="text-center py-6">

@@ -137,7 +137,11 @@ export default function AdminProductPage() {
           </thead>
           <tbody>
             {loading ? (
-              <DashboardLoading />
+              <tr>
+                <td colSpan="14">
+                  <DashboardLoading />
+                </td>
+              </tr>
             ) : paginatedProducts.length === 0 ? (
               <tr>
                 <td colSpan="13" className="text-center py-4">

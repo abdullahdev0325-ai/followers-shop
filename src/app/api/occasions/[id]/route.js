@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/connectDB";
 import Occasion from "@/models/Occasion";
 import { generateSlug } from "@/lib/generateSlug";
 import { uploadImage, getPublicIdFromUrl, deleteImage } from "@/components/cloudinary/ImageUploader";
+import { verifyAdmin } from '@/lib/auth';
 
 export async function PUT(request, { params }) {
   try {

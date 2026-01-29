@@ -1,12 +1,14 @@
 "use client";
 
+import { useSelector } from "react-redux";
 import ProductCard from "../widgets/ProductCard";
 import ProductSkeleton from "@/components/ui/ProductSkeleton";
 import { useProduct } from "@/hooks/ProductContext";
 import Pagination from "../ui/Pagination";
 
 export default function ProductsGrid({ loading }) {
-  const { filteredProducts, filters, currentPage, setCurrentPage, itemsPerPage } = useProduct();
+  const { filteredProducts } = useSelector((s) => s.products);
+  const { filters, currentPage, setCurrentPage, itemsPerPage } = useProduct();
 
   if (loading) return <ProductSkeleton />;
 

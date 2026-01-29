@@ -103,7 +103,9 @@ export default function AdminCategoryPage() {
           <tbody>
             {loading ? (
               <tr>
-                <DashboardLoading />
+                <td colSpan="6">
+                  <DashboardLoading />
+                </td>
               </tr>
             ) : categories.length === 0 ? (
               <tr>

@@ -140,12 +140,12 @@ export async function GET(request) {
     const color = url.searchParams.get('color');
     const size = url.searchParams.get('size');
     const search = url.searchParams.get('search');
-    const minPrice = Number(url.searchParams.get('minPrice') || 0);
-    const maxPrice = Number(url.searchParams.get('maxPrice') || 100000);
+    const minPriceParam = url.searchParams.get('minPrice');
+    const maxPriceParam = url.searchParams.get('maxPrice');
     const sort = url.searchParams.get('sort') || 'recommended';
 
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
-    const limit = Math.min(100, parseInt(url.searchParams.get('limit') || '12', 10));
+    const limit = Math.min(1000, parseInt(url.searchParams.get('limit') || '12', 10));
     const skip = (page - 1) * limit;
 
     const query = {};
@@ -192,8 +192,12 @@ export async function GET(request) {
       ];
     }
 
-    // Price
-    query.price = { $gte: minPrice, $lte: maxPrice };
+    // Price - only if params provided
+    if (minPriceParam !== null || maxPriceParam !== null) {
+      const minPrice = Number(minPriceParam || 0);
+      const maxPrice = Number(maxPriceParam || 100000);
+      query.price = { $gte: minPrice, $lte: maxPrice };
+    }
 
     // Sorting
     let sortQuery = {};

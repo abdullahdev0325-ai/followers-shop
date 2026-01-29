@@ -117,7 +117,11 @@ export default function AdminOccasionPage() {
           </thead>
           <tbody>
             {loading ? (
-              <DashboardLoading />
+              <tr>
+                <td colSpan="7">
+                  <DashboardLoading />
+                </td>
+              </tr>
             ) : occasions.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center py-4">
@@ -130,7 +134,7 @@ export default function AdminOccasionPage() {
                   <td className="border border-gray-300 px-2 py-1">
                     {o.image ? (
                       <Image
-                        src={o.image}
+                        src={`/${o.image}`}
                         alt={o.name || "Occasion Image"}
                         width={50}
                         height={50}

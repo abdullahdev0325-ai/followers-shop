@@ -10,6 +10,7 @@ import ProgressBarProviders from "@/components/ui/ProgressBar";
 import { ProductProvider } from "@/hooks/ProductContext";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { CategoriesProvider } from "@/hooks/CategoriesContext";
+import ThemeProvider from "@/components/layout/ThemeProvider";
 
 export default function ClientLayout({ children }) {
   return (
@@ -20,10 +21,12 @@ export default function ClientLayout({ children }) {
               <ProductProvider>
                 <CartProvider>
                   <WishlistProvider>
-                    <ConditionalLayout>
-                      {/* <Toaster position="top-right" /> */}
-                      {children}
-                    </ConditionalLayout>
+                    <ThemeProvider>
+                      <ConditionalLayout>
+                        {/* <Toaster position="top-right" /> */}
+                        {children}
+                      </ConditionalLayout>
+                    </ThemeProvider>
                   </WishlistProvider>
                 </CartProvider>
               </ProductProvider>
